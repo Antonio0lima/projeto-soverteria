@@ -1,0 +1,118 @@
+ @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wdth,wght@101.7,200..900&display=swap');
+    
+
+
+
+ body{
+        box-sizing: border-box; 
+        
+        margin: 0;
+        padding: 0;
+        background-color: rgb(144, 120, 120);
+        font-family: "Inconsolata";
+    }
+    li, button{
+        font-size: 20px;
+        color: #000000;
+        text-decoration: none;
+        
+    }
+    button{
+        border: none;
+        background-color: #FC913A;
+        border-radius: 30px;
+        padding: 16px 50px;
+        cursor: pointer;
+    }
+
+    button.sino {
+        background-color: #F9D423;
+        padding: 10px 14px;
+        
+    }
+    button.sino svg {
+        width: 25px;
+        height: 25px;
+    }
+    header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0px 0px;
+        background-color: #E1F5C4;
+        height: 80px;
+
+            
+        
+    
+    }
+  
+    .logotipo{
+        color: rgb(0, 0, 0);
+        
+        font-weight: bold;
+        margin-right: 14%;
+        font-size: clamp(20px,5vw,35px);
+        margin-right: 14%;
+        min-width: 120px;
+        
+    
+    }
+
+    .conterQuadrados{display: flex; height: 100%;}
+
+    .quadrado{
+        width: 80px;
+        flex: 1;
+        min-width: 30px;  
+        max-width: 80px; 
+        
+    }
+    .vermelho{background-color: #FF4E50; }
+    .laranja{background-color: #FC913A; }
+    .amarelo{background-color: #F9D423; }
+    .verdeleve{background-color: #EDE574; }
+
+    .nav-links{
+        font-size: 35px;
+        list-style: none;
+        display: flex;
+    }
+    .nav-links, li{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0px 5px;
+        
+    }
+    .nav-links, li button:hover{
+        color: #E1F5C4;
+        
+    }
+
+    @media (max-width: 768px) {
+        .quadrado {
+        width: 50px;
+        
+    }
+
+        .logotipo{
+            
+            font-size: 28px;
+            margin-right: 10px; 
+        }
+        
+        .nav-links li button {
+            padding: 8px 14px;
+            font-size: 16px;
+        }
+
+        
+   
+.nav-links li button {
+    padding: 8px 12px;   
+    font-size: 16px;     
+    min-width: 60px;     
+} 
+    }
+    
