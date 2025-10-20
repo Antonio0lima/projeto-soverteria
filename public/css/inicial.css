@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wdth,wght@101.7,200..900&display=swap');
+
+.carrosel-container {
+    position: relative;
+    width: 80%;
+    margin: 50px auto;
+    overflow: hidden;
+}
+
+.carrossel {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.3s ease;
+
+}
+
+.card {
+    flex: 0 0 calc((100% / 3) - (20px * 2 / 3)); /*3 cards visiveis, descontando gap */
+    text-align: center;
+    
+}
+
+.card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.btn-left, .btn-right {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.btn-left {left: 10px;}
+.btn-right{right: 10px;}

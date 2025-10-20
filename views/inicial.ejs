@@ -4,15 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Sorveteria da Nena</title>
-    <link rel="stylesheet" href="/navbar.css">
+
+    <link rel="stylesheet" href="/css/inicial.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    
+    
 
 </head>
 <body>
     <%- include('partials/navbar/navbar') %>
 
 
-   
 
+
+    <!-- Carrosel -->
+    <div class="carrosel-container">
+        <button class="btn-left">&#10094</button>
+        
+        <div class="carrossel">
+            <div class="card">
+                <img src="/img/teste.png" alt="Produto 1"/> 
+                <p>Produto 1</p>
+
+            </div>
+
+            <div class="card">
+                <img src="/img/teste2.png" alt="Produto 2"/>
+                <p>Produto 2</p>
+                
+            </div>
+
+            <div class="card">
+                <img src="/img/teste3.png" alt="Produto 3"/>
+                <p>Produto 3</p>
+            </div>
+            <div class="card">
+                <img src="/img/teste4.png" alt="Produto 4"/> 
+                <p>Produto 4</p>
+
+            </div>
+        </div>
+
+        <button class="btn-right">&#10095</button>
+
+    </div>
+   <!-- Rodapé --> 
+
+
+   
     
+   <script src="/scripts/inicialCarrosel.js"></script>
 </body>
 </html>

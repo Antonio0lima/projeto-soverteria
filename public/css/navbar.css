@@ -11,13 +11,13 @@
         background-color: rgb(144, 120, 120);
         font-family: "Inconsolata";
     }
-    li, button{
+    .navbar li button{
         font-size: 20px;
         color: #000000;
         text-decoration: none;
         
     }
-    button{
+    .navbar button{
         border: none;
         background-color: #FC913A;
         border-radius: 30px;
@@ -25,16 +25,16 @@
         cursor: pointer;
     }
 
-    button.sino {
+    .navbar button.sino {
         background-color: #F9D423;
         padding: 10px 14px;
         
     }
-    button.sino svg {
+    .navbar button.sino svg {
         width: 25px;
         height: 25px;
     }
-    header{
+    .navbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -47,7 +47,7 @@
     
     }
   
-    .logotipo{
+    .navbar .logotipo{
         color: rgb(0, 0, 0);
         
         font-weight: bold;
@@ -59,57 +59,57 @@
     
     }
 
-    .conterQuadrados{display: flex; height: 100%;}
+    .navbar .conterQuadrados{display: flex; height: 100%;}
 
-    .quadrado{
+    .navbar .quadrado{
         width: 80px;
         flex: 1;
         min-width: 30px;  
         max-width: 80px; 
         
     }
-    .vermelho{background-color: #FF4E50; }
-    .laranja{background-color: #FC913A; }
-    .amarelo{background-color: #F9D423; }
-    .verdeleve{background-color: #EDE574; }
+    .navbar .vermelho{background-color: #FF4E50; }
+    .navbar .laranja{background-color: #FC913A; }
+    .navbar .amarelo{background-color: #F9D423; }
+    .navbar .verdeleve{background-color: #EDE574; }
 
-    .nav-links{
+    .navbar .nav-links{
         font-size: 35px;
         list-style: none;
         display: flex;
     }
-    .nav-links, li{
+    .navbar .nav-links li{
         display: flex;
         align-items: center;
         gap: 10px;
         padding: 0px 5px;
         
     }
-    .nav-links, li button:hover{
+    .navbar .nav-links li button:hover{
         color: #E1F5C4;
         
     }
 
     @media (max-width: 768px) {
-        .quadrado {
+        .navbar .quadrado {
         width: 50px;
         
     }
 
-        .logotipo{
+        .navbar .logotipo{
             
             font-size: 28px;
             margin-right: 10px; 
         }
         
-        .nav-links li button {
+        .navbar .nav-links li button {
             padding: 8px 14px;
             font-size: 16px;
         }
 
         
    
-.nav-links li button {
+.navbar .nav-links li button {
     padding: 8px 12px;   
     font-size: 16px;     
     min-width: 60px;     

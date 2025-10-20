@@ -15,8 +15,8 @@ app.get('/', (req, res) => {
     res.render('inicial'); // renderiza views/inicial.ejs
 });
 
-app.get('/cadarpio', (req, res) => {
-    res.render('cadarpio');
+app.get('/cardapio', (req, res) => {
+    res.render('cardapio');
 });
 
 app.get('/login', (req, res) => {
