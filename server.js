@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Rotas
 app.get('/', (req, res) => {
-    res.render('inicial'); // renderiza views/inicial.ejs
+    res.render('loginEregistro'); // renderiza views/loginEregistro.ejs como primeira pagina
 });
 
 app.get('/cardapio', (req, res) => {
@@ -20,7 +20,7 @@ app.get('/cardapio', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.render('loginEregistro');
+    res.render('inicial');
 });
 
 app.get('/perfil', (req, res) => {
