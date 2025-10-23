@@ -1,5 +1,152 @@
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wdth,wght@101.7,200..900&display=swap');
 
- body{
-    background-color: red;
- }
+body {
+
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Inconsolata', monospace;
+background-image: url('/img/sorveteBackground2.jpeg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  z-index: 0;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/img/sorveteBackground2.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: blur(8px) brightness(0.7);
+  z-index: -1;
+}
+
+
+/* Containers de login e registro */
+.login-container,
+.registro-container {
+  background-color: #EDE574;
+  width: 400px;
+  min-height: 500px; /* altura maior */
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-container {
+    min-height: 400px;
+}
+/* Título */
+h2 {
+  background-color: #FC913A;
+  margin: 0;
+  padding: 15px;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+  color: rgb(0, 0, 0);
+}
+
+/* Formulários */
+form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Campos */
+.formulario-login div,
+.formulario-registrar div {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: normal; /* sem negrito */
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 25px;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: #fff;
+}
+
+/* Botões */
+.buttons-loginregister {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: auto; /* empurra para baixo */
+}
+
+.button-conta {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #FF4E50;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-conta:hover {
+  color: white;
+}
+
+#botao-registro{
+    background-color: #FC913A;
+}
+
+.titulo-com-voltar {
+  position: relative;
+  background-color: #FC913A;
+  margin: 0;
+  padding: 15px;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+  color: rgb(0, 0, 0);
+  font-size: 28px;
+}
+
+.icone-voltar {
+  
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: rgb(0, 0, 0);
+    font-size: 40px; /* aumenta o tamanho do ícone */
+
+
+}
+.registro-container {
+  display: none;
+}
+

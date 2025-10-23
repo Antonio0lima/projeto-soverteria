@@ -1,66 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina de Login</title>
-    <link rel="stylesheet" href="/css/loginEregistro.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Página de Login</title>
+  <link rel="stylesheet" href="/css/loginEregistro.css" />
 </head>
-
 <body>
+  <!-- Login -->
+  <div class="login-container">
+    <h2>LOGIN</h2>
+    <form action="/inicial" method="post" class="formulario-login">
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" />
+      </div>
 
-    <div> 
-   <form action="#">
-        <label >LOGIN </label>
+      <div>
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" />
+      </div>
 
-         <div>
+      <div class="buttons-loginregister">
+        <button type="submit" class="button-conta">Logar</button>
+        <button type="button" class="button-conta" id="botao-registro">Registrar</button>
+      </div>
+    </form>
+  </div>
 
-          <label for="email">Email</label><br>
-          <input type="email" id="email"/><br>
-    
-         </div>
+  <!-- Registro -->
+  <div class="registro-container" style="display: none;">
+    <h2 class="titulo-com-voltar">
+      <button type="button" id="botao-voltar" class="icone-voltar">&#8592;</button>
+      CRIAR CONTA
+    </h2>
+    <form class="formulario-registrar">
+      <div>
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" />
+      </div>
 
+      <div>
+        <label for="email_2">Email</label>
+        <input type="email" id="email_2" />
+      </div>
 
-        <div>
-            <label for="senha">Senha</label><br>
-            <input type="password" id="senha"/>
-        </div><br>
-    
-            <button type="submit">Logar</button>
-            <button>Registrar</button>
+      <div>
+        <label for="senha_2">Senha</label>
+        <input type="password" id="senha_2" />
+      </div>
 
-     </form> 
-    </div>
+      <div>
+        <label for="number_cel">Número de celular</label>
+        <input type="tel" id="number_cel" />
+      </div>
 
-    <div>
-        <form>
-        <label> CRIAR CONTA </label>            
-            
-            <div>
-            <label for="nome">Nome</label><br>
-            <input type="text" id="nome"/><br>
-            </div>
+      <button type="submit" class="button-conta" id="botao-confirmar-registro">Registrar</button>
+    </form>
+  </div>
 
-            <div>
-                <label for="email_2"> Email </label><br>
-                <input id="email_2"/><br>
-
-            </div>
-
-            <div>
-                <label for="senha_2">Senha</label><br>
-                <input id="senha_2"/><br>
-            </div>
-
-            <div>
-                <label for="number_cel">Numero de celular</label><br>
-                <input id="number_cel"/><br>
-            </div>
-
-            <button type="submit" id="botao-registro"> Registrar</button><br>
-            
-
-        </form>
-    </div>
+  <!-- Script -->
+  <script src="/scripts/popupLoginregistro.js"></script>
 </body>
 </html>

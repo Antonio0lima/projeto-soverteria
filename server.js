@@ -18,10 +18,15 @@ app.get('/', (req, res) => {
 app.get('/cardapio', (req, res) => {
     res.render('cardapio');
 });
-
-app.get('/login', (req, res) => {
-    res.render('inicial');
+app.use(express.urlencoded({ extended: true })); // para ler dados do formulário
+app.post('/inicial', (req, res) => {
+    // Aqui você pode acessar os dados do formulário com req.body.email, req.body.senha
+    res.render('inicial'); // ou res.redirect('/inicial')
 });
+app.get('/inicial', (req, res) => {
+  res.render('inicial');
+});
+
 
 app.get('/perfil', (req, res) => {
     res.render('perfil');
