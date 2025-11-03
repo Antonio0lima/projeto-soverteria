@@ -32,6 +32,14 @@ app.get('/perfil', (req, res) => {
     res.render('perfil');
 });
 
+app.get('/lista-clientes', (req, res) => {
+  res.render('lista-clientes');
+});
+
+app.get('/fila-pedidos', (req, res) => {
+  res.render('fila-pedidos');
+});
+
 // Inicia o servidor
 const PORT = 3000;
 app.listen(PORT, () => {
