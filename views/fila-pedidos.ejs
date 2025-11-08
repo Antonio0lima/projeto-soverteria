@@ -1,58 +1,124 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fila de pedidos</title>
   <link rel="stylesheet" href="/css/fila-pedidos-lista-clientes.css">
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
-
 </head>
 
 <body> 
+  <div class="navbar">Navbar</div>
 
-<div class= "navbar">Navbar</div>
-<div class="painel-pedidos">
-  <div class="grupo-coluna">
-    <h2 class="titulo-coluna">Aguarda confirmação</h2>
-    <div class="coluna">
-        <div class="cartao" draggable="true">
-        <div class="linha">
-        <div class="campo">nome do cliente</div>
-        <div class="campo pequeno">data</div>
-        </div>
-        <div class="linha">
-        <div class="campo grande">Lista de produtos comprados</div>
-        <div class="coluna-direita">
-        <div class="campo pequeno">valor</div>
-        <div class="bolinha">A</div>
-        </div>
-        </div>
-        </div>
+  <div class="painel-pedidos">
 
+    <!-- Coluna 1: Aguarda confirmação -->
+    <div class="grupo-coluna">
+      <h2 class="titulo-coluna">Aguarda confirmação</h2>
+      <div class="coluna">
+        <% pedidos.filter(p => p.status === 'aguarda_confirmacao').forEach(pedido => { %>
+          <div class="cartao" draggable="true">
+            <div class="linha">
+              <div class="campo"><%= pedido.nome_cliente %></div>
+              <div class="campo pequeno"><%= pedido.data_pedido %></div>
+            </div>
+            <div class="linha">
+              <div class="campo grande"><%= pedido.produtos %></div>
+              <div class="coluna-direita">
+                <div class="campo pequeno">R$ <%= pedido.valor %></div>
+                <div class="bolinha">A</div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+
+        <% if (pedidos.filter(p => p.status === 'aguarda_confirmacao').length === 0) { %>
+          <p class="vazio">Nenhum pedido aguardando confirmação.</p>
+        <% } %>
+      </div>
     </div>
+
+    <!-- Coluna 2: Confirmado -->
+    <div class="grupo-coluna">
+      <h2 class="titulo-coluna">Confirmado</h2>
+      <div class="coluna">
+        <% pedidos.filter(p => p.status === 'confirmado').forEach(pedido => { %>
+          <div class="cartao" draggable="true">
+            <div class="linha">
+              <div class="campo"><%= pedido.nome_cliente %></div>
+              <div class="campo pequeno"><%= pedido.data_pedido %></div>
+            </div>
+            <div class="linha">
+              <div class="campo grande"><%= pedido.produtos %></div>
+              <div class="coluna-direita">
+                <div class="campo pequeno">R$ <%= pedido.valor %></div>
+                <div class="bolinha">C</div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+
+        <% if (pedidos.filter(p => p.status === 'confirmado').length === 0) { %>
+          <p class="vazio">Nenhum pedido confirmado.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Coluna 3: Aguarda entrega -->
+    <div class="grupo-coluna">
+      <h2 class="titulo-coluna">Aguarda entrega</h2>
+      <div class="coluna">
+        <% pedidos.filter(p => p.status === 'entrega').forEach(pedido => { %>
+          <div class="cartao" draggable="true">
+            <div class="linha">
+              <div class="campo"><%= pedido.nome_cliente %></div>
+              <div class="campo pequeno"><%= pedido.data_pedido %></div>
+            </div>
+            <div class="linha">
+              <div class="campo grande"><%= pedido.produtos %></div>
+              <div class="coluna-direita">
+                <div class="campo pequeno">R$ <%= pedido.valor %></div>
+                <div class="bolinha">E</div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+
+        <% if (pedidos.filter(p => p.status === 'entrega').length === 0) { %>
+          <p class="vazio">Nenhum pedido aguardando entrega.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Coluna 4: Concluído -->
+    <div class="grupo-coluna">
+      <h2 class="titulo-coluna">Concluído</h2>
+      <div class="coluna">
+        <% pedidos.filter(p => p.status === 'concluido').forEach(pedido => { %>
+          <div class="cartao" draggable="true">
+            <div class="linha">
+              <div class="campo"><%= pedido.nome_cliente %></div>
+              <div class="campo pequeno"><%= pedido.data_pedido %></div>
+            </div>
+            <div class="linha">
+              <div class="campo grande"><%= pedido.produtos %></div>
+              <div class="coluna-direita">
+                <div class="campo pequeno">R$ <%= pedido.valor %></div>
+                <div class="bolinha">✔</div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+
+        <% if (pedidos.filter(p => p.status === 'concluido').length === 0) { %>
+          <p class="vazio">Nenhum pedido concluído.</p>
+        <% } %>
+      </div>
+    </div>
+
   </div>
 
-  <div class="painel-pedidos">
-  <div class="grupo-coluna">
-    <h2 class="titulo-coluna">Confirmado</h2>
-    <div class="coluna"></div>
-  </div>
-
-  <div class="painel-pedidos">
-  <div class="grupo-coluna">
-    <h2 class="titulo-coluna">Aguarda entrega</h2>
-    <div class="coluna"></div>
-  </div>
-
-  <div class="painel-pedidos">
-  <div class="grupo-coluna">
-    <h2 class="titulo-coluna">Concluído</h2>
-    <div class="coluna"></div>
-  </div>
-<button id="addCard">Adicionar cartão</button>
-<script src="/scripts/fila-pedidos.js"></script>
+  <script src="/scripts/fila-pedidos.js"></script>
 </body>
-
-
+</html>
