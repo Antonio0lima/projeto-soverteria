@@ -1,12 +1,16 @@
 // server.js
-const express = require('express');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import pool from './db.js';
+
 const app = express();
-const path = require('path');
 
-// Configura o EJS como view engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+app.set("view engine", "ejs");
+app.set("views", "./views");
 // Pasta pública para CSS, JS e imagens
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -36,8 +40,35 @@ app.get('/lista-clientes', (req, res) => {
   res.render('lista-clientes');
 });
 
-app.get('/fila-pedidos', (req, res) => {
+/*app.get('/fila-pedidos', (req, res) => {
   res.render('fila-pedidos');
+});*/
+
+app.get("/fila-pedidos", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+  SELECT p.*, c.nome AS nome_cliente
+  FROM pedidos p
+  JOIN clientes c ON p.id_cliente = c.id
+`);
+
+     const pedidosFormatados = rows.map(p => {
+      const data = new Date(p.data_pedido);
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = data.getFullYear();
+      const hora = String(data.getHours()).padStart(2, '0');
+      const min = String(data.getMinutes()).padStart(2, '0');
+      return {
+        ...p,
+        data_pedido: `${dia}/${mes}/${ano} ${hora}:${min}`
+      };
+    });
+    res.render("fila-pedidos", { pedidos: pedidosFormatados }); // envia 'pedidos' para o EJS
+  } catch (err) {
+    console.error("Erro ao buscar pedidos:", err);
+    res.status(500).send("Erro ao buscar pedidos");
+  }
 });
 
 // Inicia o servidor
