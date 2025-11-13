@@ -9,6 +9,9 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.set("view engine", "ejs");
 app.set("views", "./views");
 // Pasta pública para CSS, JS e imagens
@@ -68,6 +71,31 @@ app.get("/fila-pedidos", async (req, res) => {
   } catch (err) {
     console.error("Erro ao buscar pedidos:", err);
     res.status(500).send("Erro ao buscar pedidos");
+  }
+});
+
+app.post('/atualizar-status', async (req, res) => {
+  try {
+    // desestruturamos as chaves que o front está enviando: id e novo_status
+    const { id, novo_status } = req.body;
+
+    console.log('Recebido no servidor:', req.body); // debug completo do corpo
+    console.log('Id:', id, 'Novo status:', novo_status);
+
+    // validação simples
+    if (!id || !novo_status) {
+      return res.status(400).json({ error: 'id ou novo_status ausente no corpo da requisição' });
+    }
+
+    const [result] = await pool.query(
+      'UPDATE pedidos SET status = ? WHERE id = ?',
+      [novo_status, id]
+    );
+
+    res.json({ sucesso: true, linhasAfetadas: result.affectedRows });
+  } catch (err) {
+    console.error('❌ Erro detalhado ao atualizar status:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
