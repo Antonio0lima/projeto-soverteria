@@ -3,6 +3,8 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pool from './db.js';
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
