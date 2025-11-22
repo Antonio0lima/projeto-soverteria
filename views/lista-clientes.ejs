@@ -7,12 +7,11 @@
   <title>Lista de clientes</title>
   <link rel="stylesheet" href="/css/fila-pedidos-lista-clientes.css">
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="/css/navbar.css">
 </head>
 
 <body> 
-
-  <div class= "navbar">Navbar</div>
+  <%- include('partials/navbar/navbar') %>
 <div class="menu">
   <span class="botao_add">+</span>
   <div class="linhaPesquisa">
@@ -22,10 +21,12 @@
 </div>
 
 <div class="lista-clientes">
-  <div class="linha-cliente">
-  <div>Nome do cliente</div>
-  <div class="botao-editar">Es</div>
-  </div>
+  <% clientes.forEach(cliente => { %>
+    <div class="linha-cliente">
+      <div><%= cliente.nome %></div>
+      <div class="botao-editar">E</div>
+    </div>
+  <% }) %>
 </div>
 
 <div class="popup">

@@ -1,10 +1,12 @@
 import mysql from 'mysql2/promise';
+import dotenv from "dotenv";
+dotenv.config();
 
 const conexao = await mysql.createConnection({
-  host: 'localhost',      // servidor (geralmente localhost)
-  user: 'root',           // seu usuário do MySQL
-  password: '17082002', // substitui pela tua senha
-  database: 'sorveteria'  // nome do banco
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
 console.log('✅ Conectado ao banco de dados MySQL!');
