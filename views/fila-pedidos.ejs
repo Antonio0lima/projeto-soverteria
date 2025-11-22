@@ -12,6 +12,21 @@
 
 <body> 
   <%- include('partials/navbar/navbar') %>
+  <!-- Overlay do popup -->
+<div id="overlay" class="overlay"></div>
+
+<!-- Popup de edição -->
+<div id="popupEditar" class="popup">
+    <h2>Editar Pedido</h2>
+
+    <label>Valor:</label>
+    <input type="number" id="editValor">
+
+    <div class="actions">
+        <button onclick="salvarEdicao()">Salvar</button>
+        <button onclick="fecharPopup()">Cancelar</button>
+    </div>
+</div>
 
   <div class="painel-pedidos">
 

@@ -3,6 +3,8 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pool from './db.js';
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
@@ -39,9 +41,7 @@ app.get('/perfil', (req, res) => {
     res.render('perfil');
 });
 
-app.get('/lista-clientes', (req, res) => {
-  res.render('lista-clientes');
-});
+
 
 /*app.get('/fila-pedidos', (req, res) => {
   res.render('fila-pedidos');
@@ -74,6 +74,20 @@ app.get("/fila-pedidos", async (req, res) => {
   }
 });
 
+app.get("/lista-clientes", async (req, res) => {
+  try{
+    const [rows] = await pool.query(
+      'SELECT * FROM clientes'
+    )
+
+    res.render("lista-clientes", {clientes: rows});
+  }catch (err) {
+    console.error("Erro ao buscar clientes:", err);
+    res.status(500).send("Erro ao buscar clientes");
+  }
+
+})
+
 app.post('/atualizar-status', async (req, res) => {
   try {
     // desestruturamos as chaves que o front está enviando: id e novo_status
@@ -99,6 +113,23 @@ app.post('/atualizar-status', async (req, res) => {
   }
 });
 
+app.post("/editar-pedido", async (req, res) => {
+  const { id, valor } = req.body;
+
+  console.log("Recebido para edição:", id, valor);
+
+  try {
+    const [result] = await pool.query(
+      "UPDATE pedidos SET valor = ? WHERE id = ?",
+      [valor, id]
+    );
+
+    res.json({ ok: true, msg: "Valor atualizado!", linhas: result.affectedRows });
+  } catch (erro) {
+    console.error("Erro ao editar pedido:", erro);
+    res.status(500).json({ ok: false, erro: "Erro no servidor" });
+  }
+});
 // Inicia o servidor
 const PORT = 3000;
 app.listen(PORT, () => {
