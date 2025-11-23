@@ -51,15 +51,15 @@ app.get('/', (req, res) => {
   res.render('loginEregistro');
 });
 
-app.get('/cardapio', async (req, res) => {
-  try {
-    const [rows] = await pool.query('select * from ');
-    console.log("Produtos carregados:", rows);
-    res.render('cardapio', { produtos: rows });
-  } catch (err) {
-    console.error("Erro ao buscar produtos:", err);
-    res.status(500).send("Erro ao buscar produtos");
-  }
+app.get('/cardapio',async(req, res) => {
+    try{
+      const [rows]=await pool.query('select * from categorias');
+      console.log("Produtos carregados:", rows);
+      res.render('cardapio',{produtos: rows});
+    }catch(err){
+      console.error("Erro ao buscar produtos:", err);
+      res.status(500).send("Erro ao buscar produtos");
+    }
 });
 
 app.post('/inicial', async (req, res) => {

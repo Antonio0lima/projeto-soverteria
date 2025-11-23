@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> cardapio </title>
+    <title>cardapio</title>
     <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/cardapio.css">
 </head>
 <body>
     <% if (usuario && usuario.tipo==="admin" ) { %>
@@ -16,35 +17,40 @@
 
         <main class="conteudo-principal">
 
-            <<section class="card painel-opcoes">
-    <div class="opcoes-header">
-        <i class="fas fa-sliders-h"></i>
-    </div>
-
-    <div class="opcoes-body">
-        <div class="item-grid">
-
-            <% produtos.forEach(produto => { %>
-                <div class="item">
-                    <div class="item-circulo"></div>
-                    <span><%= produto.nome %></span>
+            <!-- PAINEL DE OPÇÕES -->
+            <section class="card painel-opcoes">
+                <div class="opcoes-header">
+                    <i class="fas fa-sliders-h"></i>
                 </div>
-            <% }) %>
 
-        </div> <!-- fecha item-grid -->
-    </div> <!-- fecha opcoes-body -->
-</section> <!-- fecha painel-opcoes -->
+                <div class="opcoes-body">
+                    <div class="item-grid">
 
+                        <% produtos.forEach(produto => { %>
+                            <div class="item" data-nome="<%= produto.nome %>">
+                                <div class="item-circulo"></div>
+                                <span><%= produto.nome %></span>
+                            </div>
+                        <% }) %>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAINEL A -->
             <section class="card painel-info-opcoes">
                 A
                 <button class="botao-adicionar">+</button>
             </section>
 
+            <!-- PAINEL B -->
             <section class="card painel-produto-escolhido">
                 B
             </section>
+
         </main>
 
+        <!-- BOTÃO FINAL -->
         <div class="container-botao-final">
             <button class="botao-confirmacao">
                 <i class="fas fa-check"></i>
@@ -52,6 +58,26 @@
         </div>
 
     </div>
-    <link rel="stylesheet" href="/css/cardapio.css" />
+
+    <!-- JS PARA SELEÇÃO DOS ITENS -->
+    <script>
+        const itens = document.querySelectorAll(".item");
+
+        itens.forEach(item => {
+            item.addEventListener("click", () => {
+
+                // Remove seleção dos outros
+                itens.forEach(i => i.classList.remove("selecionado"));
+
+                // Seleciona clicado
+                item.classList.add("selecionado");
+
+                // Nome do produto selecionado
+                const nome = item.dataset.nome;
+                console.log("Selecionado:", nome);
+            });
+        });
+    </script>
+
 </body>
 </html>
