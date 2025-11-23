@@ -15,7 +15,6 @@
 
         <main class="conteudo-principal">
 
-            <!-- PAINEL DE OPÇÕES -->
             <section class="card painel-opcoes">
                 <div class="opcoes-header">
                     <i class="fas fa-sliders-h"></i>
@@ -35,20 +34,17 @@
                 </div>
             </section>
 
-            <!-- PAINEL A -->
             <section class="card painel-info-opcoes">
                 A
                 <button class="botao-adicionar">+</button>
             </section>
 
-            <!-- PAINEL B -->
             <section class="card painel-produto-escolhido">
                 B
             </section>
 
         </main>
 
-        <!-- BOTÃO FINAL -->
         <div class="container-botao-final">
             <button class="botao-confirmacao">
                 <i class="fas fa-check"></i>
@@ -57,25 +53,7 @@
 
     </div>
 
-    <!-- JS PARA SELEÇÃO DOS ITENS -->
-    <script>
-        const itens = document.querySelectorAll(".item");
-
-        itens.forEach(item => {
-            item.addEventListener("click", () => {
-
-                // Remove seleção dos outros
-                itens.forEach(i => i.classList.remove("selecionado"));
-
-                // Seleciona clicado
-                item.classList.add("selecionado");
-
-                // Nome do produto selecionado
-                const nome = item.dataset.nome;
-                console.log("Selecionado:", nome);
-            });
-        });
-    </script>
+    <script src="/js/cardapio.js"></script>
 
 </body>
 </html>
