@@ -1,3 +1,4 @@
+/*
 import mysql from 'mysql2/promise';
 import dotenv from "dotenv";
 dotenv.config();
@@ -12,3 +13,7 @@ const conexao = await mysql.createConnection({
 console.log('✅ Conectado ao banco de dados MySQL!');
 
 export default conexao;
+
+*/
+console.log("⚠️ Conexão ao banco DESATIVADA temporariamente");
+export default {};

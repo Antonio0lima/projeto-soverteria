@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat</title>
+  <link rel="stylesheet" href="/css/navbar.css" />
+  <link rel="stylesheet" href="/css/chat.css" />
+</head>
+
+<body>
+  <%- include('partials/navbar/navbar') %>
+
+  <main>
+    <div class="container">
+      <!-- Sidebar com lista de clientes -->
+      <div class="sidebar" id="sidebar">
+        <% chats.forEach(chat => { %>
+          <div class="chat-preview">
+            <p class="client-name"><%= chat.nome %></p>
+            <p class="last-message"><%= chat.ultimaMensagem %></p>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Área central do chat -->
+      <div class="chat-window">
+        <div class="chat-container">
+          <!-- Nome do cliente -->
+          <div class="chat-header">
+            <h2 class="chat-title"><%= chatAtual.nome %></h2>
+          </div>
+
+          <!-- Mensagens -->
+          <div class="messages" id="messages">
+            <% chatAtual.mensagens.forEach((msg, index) => { %>
+              <p class="message <%= index % 2 === 0 ? 'client' : 'atendente' %>"><%= msg %></p>
+            <% }) %>
+          </div>
+
+          <!-- Campo de envio -->
+          <form class="input-area">
+            <input type="text" name="mensagem" placeholder="Digite sua mensagem..." required />
+            <button type="submit" class="send-button">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Socket.IO -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const form = document.querySelector('.input-area');
+    const input = form.querySelector('input[name="mensagem"]');
+    const messagesDiv = document.getElementById('messages');
+
+    window.onload = () => {
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const texto = input.value;
+      if (texto.trim()) {
+        socket.emit('mensagem', texto);
+        input.value = '';
+      }
+    });
+
+    socket.on('mensagem', (msg) => {
+      const p = document.createElement('p');
+      p.textContent = msg;
+      p.classList.add('message', 'atendente');
+      messagesDiv.appendChild(p);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+  </script>
+</body>
+</html>

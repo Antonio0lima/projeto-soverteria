@@ -1,0 +1,140 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #fffbea;
+  font-family: "Inconsolata", Arial, sans-serif;
+  background-image: url("/img/sorveteBackground2.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  gap: 20px;
+  padding: 0 20px;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 30%;
+  background-color: #ffeb3b;
+  padding: 20px;
+  overflow-y: auto;
+  border-right: 2px solid #fdd835;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chat-preview {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+.chat-preview:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+}
+.client-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 5px;
+}
+.last-message {
+  color: #666;
+  font-size: 0.95em;
+}
+
+/* Área central */
+.chat-window {
+  width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* ocupa toda a altura */
+  background-color: #fff;
+}
+
+/* Container amarelo */
+.chat-container {
+  background-color: #ffeb3b;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 15px;
+}
+
+/* Cabeçalho */
+.chat-header {
+  background-color: transparent;
+}
+.chat-title {
+  font-size: 1.4em;
+  color: #333;
+  margin: 0;
+}
+
+/* Mensagens */
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Mensagem individual */
+.message {
+  max-width: 60%;
+  padding: 10px 15px;
+  border-radius: 16px;
+  font-size: 1em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.message.client {
+  align-self: flex-start;
+  background-color: #fff;
+  border: 2px solid #ffeb3b;
+}
+.message.atendente {
+  align-self: flex-end;
+  background-color: #ffeb3b;
+  color: #000;
+}
+
+/* Campo de envio */
+.input-area {
+  display: flex;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  flex-shrink: 0; /* mantém fixo no final */
+  position: sticky;
+  bottom: 0; /* cola no rodapé do container */
+}
+.input-area input {
+  flex-grow: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 12px 0 0 12px;
+  font-size: 1em;
+}
+.send-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 0 12px 12px 0;
+  cursor: pointer;
+}
