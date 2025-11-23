@@ -17,16 +17,17 @@ app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", "./views");
 // Pasta pública para CSS, JS e imagens
+app.use(express.urlencoded({ extended: true })); 
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Rotas
 app.get('/', (req, res) => {
-    res.render('loginEregistro'); // renderiza views/loginEregistro.ejs como primeira pagina
+    res.render('loginEregistro'); 
 });
 
 app.get('/cardapio',async(req, res) => {
     try{
-      const [rows]=await pool.query('select * from produtos');
+      const [rows]=await pool.query('select * from ');
       console.log("Produtos carregados:", rows);
       res.render('cardapio',{produtos: rows});
     }catch(err){
@@ -34,10 +35,10 @@ app.get('/cardapio',async(req, res) => {
       res.status(500).send("Erro ao buscar produtos");
     }
 });
-app.use(express.urlencoded({ extended: true })); // para ler dados do formulário
+
 app.post('/inicial', (req, res) => {
-    // Aqui você pode acessar os dados do formulário com req.body.email, req.body.senha
-    res.render('inicial'); // ou res.redirect('/inicial')
+    
+    res.render('inicial'); 
 });
 app.get('/inicial', (req, res) => {
   res.render('inicial');
@@ -48,11 +49,6 @@ app.get('/perfil', (req, res) => {
     res.render('perfil');
 });
 
-
-
-/*app.get('/fila-pedidos', (req, res) => {
-  res.render('fila-pedidos');
-});*/
 
 app.get("/fila-pedidos", async (req, res) => {
   try {
@@ -136,6 +132,47 @@ app.post("/editar-pedido", async (req, res) => {
     console.error("Erro ao editar pedido:", erro);
     res.status(500).json({ ok: false, erro: "Erro no servidor" });
   }
+});
+
+app.post('/', async (req, res) => {
+    const { email, senha } = req.body; // Pega o que o usuário digitou
+
+    try {
+        // 1. Buscamos no banco APENAS o usuário com aquele email
+        // O '?' previne injeção de SQL
+        const [usuarios] = await pool.query('SELECT * FROM clientes WHERE email = ?', [email]);
+
+        // 2. Se a lista vier vazia, o usuário não existe
+        if (usuarios.length === 0) {
+            // Dica: idealmente, envie uma mensagem de erro para a tela
+            console.log("Usuário não encontrado!");
+            return res.redirect('/'); 
+        }
+
+        const usuario = usuarios[0]; // Pegamos o primeiro (e único) resultado
+
+        // 3. Verificamos se a senha bate
+        // ATENÇÃO: Em produção, use bcrypt.compare(senha, usuario.senha)
+        if (senha === usuario.senha) {
+            
+            console.log(`Login realizado: ${usuario.nome} (${usuario.tipo_usuario})`);
+
+            // 4. Verificamos o tipo e redirecionamos
+            if (usuario.tipo_usuario === 'admin') {
+                return res.redirect('/fila-pedidos'); // Admin vai para o Kanban
+            } else {
+                return res.redirect('/cardapio'); // Cliente vai para o cardápio (ou inicial)
+            }
+
+        } else {
+            console.log("Senha incorreta!");
+            return res.redirect('/');
+        }
+
+    } catch (erro) {
+        console.error("Erro no login:", erro);
+        res.status(500).send("Erro no servidor");
+    }
 });
 // Inicia o servidor
 const PORT = 3000;
