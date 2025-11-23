@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,89 +8,92 @@
 
     <link rel="stylesheet" href="/css/inicial.css">
     <link rel="stylesheet" href="/css/navbar.css">
-    
-    
+
+
 
 </head>
+
 <body>
-    <%- include('partials/navbar/navbar') %>
+    <% if (usuario && usuario.tipo==="admin" ) { %>
+        <%- include("partials/navbar/navbar-adm") %>
+            <% } else { %>
+                <%- include("partials/navbar/navbar") %>
+                    <% } %>
+
+                        <!-- Carrosel -->
+                        <div class="carrossel-container">
+                            <button class="btn-left">&#10094</button>
+
+                            <div class="carrossel">
+                                <div class="card">
+                                    <img src="/img/acaiItem.jpg" alt="Produto 1" class="card-img" />
+                                    <div class="card-info">
+                                        <div class="card-buttons">
+                                            <button class="comprar">COMPRE</button>
+
+                                            <button class="info">&#8505</button>
+                                        </div>
+
+                                        <p class="preco">R$ 0.00</p>
+                                    </div>
+
+                                </div>
+
+                                <div class="card">
+                                    <img src="/img/acaiItem.jpg" alt="Produto 4" class="card-img" />
+                                    <div class="card-info">
+                                        <div class="card-buttons">
+                                            <button class="comprar">COMPRE</button>
+
+                                            <button class="info">&#8505</button>
+                                        </div>
+                                        <p class="preco">R$ 0.00</p>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="card">
+                                    <img src="/img/acaiItem.jpg" alt="Produto 4" class="card-img" />
+                                    <div class="card-info">
+                                        <div class="card-buttons">
+                                            <button class="comprar">COMPRE</button>
+
+                                            <button class="info">&#8505</button>
+                                        </div>
+                                        <p class="preco">R$ 0.00</p>
+                                    </div>
+
+
+                                </div>
+                                <div class="card">
+                                    <img src="/img/acaiItem.jpg" alt="Produto 4" class="card-img" />
+                                    <div class="card-info">
+                                        <div class="card-buttons">
+                                            <button class="comprar">COMPRE</button>
+                                            <button class="info">&#8505</button>
+                                        </div>
+                                        <p class="preco">R$ 0.00</p>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <button class="btn-right">&#10095</button>
+
+                        </div>
+
+                        <div class="cardapio-wrap">
+                            <a href="/cardapio" class="button-cardapio">Veja cardápio!</a>
+                        </div>
+
+                        <!-- Rodapé -->
 
 
 
 
-    <!-- Carrosel -->
-    <div class="carrossel-container">
-        <button class="btn-left">&#10094</button>
-        
-        <div class="carrossel">
-            <div class="card">
-                <img src="/img/acaiItem.jpg" alt="Produto 1" class="card-img"/> 
-                <div class="card-info">
-                    <div class="card-buttons">
-                        <button class="comprar">COMPRE</button>
-                    
-                        <button class="info">&#8505</button>
-                    </div>
-
-                    <p class="preco">R$ 0.00</p>    
-                </div>
-
-            </div>
-
-            <div class="card">
-                <img src="/img/acaiItem.jpg" alt="Produto 4" class="card-img"/> 
-                <div class="card-info">
-                    <div class="card-buttons">
-                        <button class="comprar">COMPRE</button>
-                    
-                        <button class="info">&#8505</button>
-                    </div>
-                    <p class="preco">R$ 0.00</p>    
-                </div>
-
-
-            </div>
-
-            <div class="card">
-                <img src="/img/acaiItem.jpg" alt="Produto 4" class="card-img"/> 
-                <div class="card-info">
-                    <div class="card-buttons">
-                        <button class="comprar">COMPRE</button>
-                    
-                        <button class="info">&#8505</button>
-                    </div>
-                    <p class="preco">R$ 0.00</p>    
-                </div>
-
-
-            </div>
-            <div class="card">
-                <img src="/img/acaiItem.jpg" alt="Produto 4" class="card-img"/> 
-                <div class="card-info">
-                   <div class="card-buttons">
-                        <button class="comprar">COMPRE</button>
-                        <button class="info">&#8505</button>
-                    </div>                    
-                    <p class="preco">R$ 0.00</p>    
-                </div>
-
-
-            </div>
-        </div>
-
-        <button class="btn-right">&#10095</button>
-
-    </div>
-
-    <div class="cardapio-wrap">
-        <a href="/cardapio" class="button-cardapio">Veja cardápio!</a>
-    </div>
-
-   <!-- Rodapé --> 
-
-
-   
-    
-   <script src="/scripts/inicialCarrosel.js"></script>
+                        <script src="/scripts/inicialCarrosel.js"></script>
 </body>
+
 </html>

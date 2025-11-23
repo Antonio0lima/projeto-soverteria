@@ -8,10 +8,12 @@
     <link rel="stylesheet" href="/css/cardapio.css">
 </head>
 <body>
-
-    <%- include('partials/navbar/navbar') %>
-
-    <div class="pagina-container">
+    <% if (usuario && usuario.tipo==="admin" ) { %>
+        <%- include("partials/navbar/navbar-adm") %>
+            <% } else { %>
+                <%- include("partials/navbar/navbar") %>
+                    <% } %>
+     <div class="pagina-container">
 
         <main class="conteudo-principal">
 
