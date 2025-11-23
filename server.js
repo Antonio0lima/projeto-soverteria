@@ -196,6 +196,33 @@ app.post("/editar-pedido", async (req, res) => {
   }
 });
 
+app.get("/historico", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+  SELECT p.*, c.nome AS nome_cliente
+  FROM pedidos p
+  JOIN clientes c ON p.id_cliente = c.id
+`);
+
+    const pedidosFormatados = rows.map(p => {
+      const data = new Date(p.data_pedido);
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = data.getFullYear();
+      const hora = String(data.getHours()).padStart(2, '0');
+      const min = String(data.getMinutes()).padStart(2, '0');
+      return {
+        ...p,
+        data_pedido: `${dia}/${mes}/${ano} ${hora}:${min}`
+      };
+    });
+    res.render("historico", { pedidos: pedidosFormatados }); // envia 'pedidos' para o EJS
+  } catch (err) {
+    console.error("Erro ao buscar pedidos:", err);
+    res.status(500).send("Erro ao buscar pedidos");
+  }
+});
+
 
 // Inicia o servidor
 const PORT = 3000;

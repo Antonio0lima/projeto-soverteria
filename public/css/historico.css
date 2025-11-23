@@ -1,0 +1,168 @@
+/* Reset básico e Fontes */
+body {
+    font-family: 'Inconsolata', monospace;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+.container-historico {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Header com os filtros laranjas */
+.header-historico {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-historico h1 {
+    font-size: 2rem;
+    color: #333;
+}
+
+.filtros {
+    display: flex;
+    gap: 10px;
+}
+
+.filtro {
+    width: 80px;
+    height: 30px;
+    background-color: #FC913A; /* Laranja do seu tema */
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* --- GRID LAYOUT MÁGICO --- */
+.grid-pedidos {
+    display: grid;
+    /* Cria 3 colunas de tamanho igual */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    /* Altura automática das linhas */
+    grid-auto-rows: minmax(180px, auto);
+}
+
+/* Estilo Base dos Cards */
+.card {
+    background-color: #EAF966; /* Amarelo/Verde claro da imagem */
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* --- QUADRADO A (Destaque) --- */
+.destaque {
+    /* Ocupa 2 colunas das 3 disponíveis */
+    grid-column: span 2; 
+    background-color: #E1F5C4; /* Um tom levemente diferente para destaque */
+    min-height: 250px;
+    border: 2px solid #fff;
+}
+
+.destaque h2 {
+    font-size: 2rem;
+    margin: 10px 0;
+    color: #333;
+}
+
+.destaque .produtos {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.destaque .valor {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #FF4E50;
+    margin-top: 10px;
+}
+
+/* --- QUADRADO B (Vazio) --- */
+.vazio {
+    /* Ocupa 1 coluna */
+    grid-column: span 1;
+    background-color: #EAF966;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    border: 2px dashed #bbb; /* Borda tracejada para indicar vazio */
+}
+
+.conteudo-vazio {
+    text-align: center;
+    color: #777;
+    font-size: 1.2rem;
+}
+
+/* --- QUADRADOS C (Histórico) --- */
+.item-historico {
+    /* Ocupa 1 coluna naturalmente */
+    grid-column: span 1;
+    background-color: #F9F967; /* Amarelo mais vivo */
+    font-size: 0.9rem;
+}
+
+.card-header-mini {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.card-body-mini .resumo-prod {
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Corta texto longo com ... */
+}
+
+.valor-mini {
+    display: block;
+    margin-top: 5px;
+    font-size: 1.2rem;
+}
+
+/* Tags de Status */
+.tag-status {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.tag-status.confirmado { background-color: #4CAF50; color: white; }
+.tag-status.aguardando { background-color: #FFC107; color: black; }
+.tag-status.cancelado { background-color: #F44336; color: white; }
+
+/* Responsividade para Celular */
+@media (max-width: 768px) {
+    .grid-pedidos {
+        grid-template-columns: 1fr; /* 1 coluna só no celular */
+    }
+    
+    .destaque, .vazio, .item-historico {
+        grid-column: span 1; /* Todos ocupam a largura total */
+    }
+    
+    .vazio {
+        order: -1; /* Se quiser mudar a ordem no mobile */
+        display: none; /* Ou esconder o vazio no mobile */
+    }
+}
