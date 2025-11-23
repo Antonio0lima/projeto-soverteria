@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 
 app.get('/cardapio',async(req, res) => {
     try{
-      const [rows]=await pool.query('select * from produtos');
+      const [rows]=await pool.query('select * from categorias');
       console.log("Produtos carregados:", rows);
       res.render('cardapio',{produtos: rows});
     }catch(err){
