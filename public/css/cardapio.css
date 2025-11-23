@@ -84,9 +84,12 @@ body {
     justify-items: center;
 }
 
+/* ITENS DE PRODUTO */
 .item {
     text-align: center;
     font-size: 0.5em;
+    cursor: pointer;
+    transition: 0.2s ease;
 }
 
 .item-circulo {
@@ -95,9 +98,34 @@ body {
     background-color: white;
     border-radius: 50% !important;
     margin-bottom: 5px;
+    transition: 0.2s ease;
 }
 
-/* INFO OPÇÕES */
+.item span {
+    color: var(--cor-texto-escuro);
+    transition: 0.2s ease;
+}
+
+/* HOVER — tudo fica branco */
+.item:hover .item-circulo {
+    background-color: #ffffff;
+    transform: scale(1.06);
+}
+
+.item:hover span {
+    color: #ffffff;
+}
+
+/* SELECIONADO */
+.item.selecionado .item-circulo {
+    background-color: var(--cor-laranja-principal);
+}
+
+.item.selecionado span {
+    color: var(--cor-laranja-principal);
+}
+
+/* PAINEL A */
 .painel-info-opcoes {
     grid-area: info-opcoes;
     background-color: var(--cor-amarelo-claro);
@@ -123,7 +151,7 @@ body {
     box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* PRODUTO ESCOLHIDO */
+/* PAINEL B */
 .painel-produto-escolhido {
     grid-area: produto-escolhido;
     background-color: var(--cor-amarelo-claro);
