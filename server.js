@@ -24,8 +24,15 @@ app.get('/', (req, res) => {
     res.render('loginEregistro'); // renderiza views/loginEregistro.ejs como primeira pagina
 });
 
-app.get('/cardapio', (req, res) => {
-    res.render('cardapio');
+app.get('/cardapio',async(req, res) => {
+    try{
+      const [rows]=await pool.query('select * from produtos');
+      console.log("Produtos carregados:", rows);
+      res.render('cardapio',{produtos: rows});
+    }catch(err){
+      console.error("Erro ao buscar produtos:", err);
+      res.status(500).send("Erro ao buscar produtos");
+    }
 });
 app.use(express.urlencoded({ extended: true })); // para ler dados do formulário
 app.post('/inicial', (req, res) => {
