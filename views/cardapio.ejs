@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="/css/navbar.css">
 </head>
 <body>
-    <%- include('partials/navbar/navbar') %>
+    <% if (usuario && usuario.tipo==="admin" ) { %>
+        <%- include("partials/navbar/navbar-adm") %>
+            <% } else { %>
+                <%- include("partials/navbar/navbar") %>
+                    <% } %>
      <div class="pagina-container">
 
         <main class="conteudo-principal">

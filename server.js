@@ -4,6 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pool from './db.js';
 import dotenv from "dotenv";
+import session from "express-session";
+
+
 dotenv.config();
 
 const app = express();
@@ -11,34 +14,93 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(
+  session({
+    secret: "qualquercoisa-super-secreta",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 } // 1 hora
+  })
+);
+
+app.use((req, res, next) => {
+  res.locals.usuario = req.session.user || null;
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
 // Pasta pública para CSS, JS e imagens
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+function somenteAdmin(req, res, next) {
+  if (!req.session.user || req.session.user.tipo !== "admin") {
+    return res.status(403).send("Acesso negado");
+  }
+  next();
+}
+
+
 
 // Rotas
 app.get('/', (req, res) => {
-    res.render('loginEregistro'); 
+  res.render('loginEregistro');
 });
 
-app.get('/cardapio',async(req, res) => {
-    try{
-      const [rows]=await pool.query('select * from ');
-      console.log("Produtos carregados:", rows);
-      res.render('cardapio',{produtos: rows});
-    }catch(err){
-      console.error("Erro ao buscar produtos:", err);
-      res.status(500).send("Erro ao buscar produtos");
+app.get('/cardapio', async (req, res) => {
+  try {
+    const [rows] = await pool.query('select * from ');
+    console.log("Produtos carregados:", rows);
+    res.render('cardapio', { produtos: rows });
+  } catch (err) {
+    console.error("Erro ao buscar produtos:", err);
+    res.status(500).send("Erro ao buscar produtos");
+  }
+});
+
+app.post('/inicial', async (req, res) => {
+  const { email, senha } = req.body; // Pega o que o usuário digitou
+
+  try {
+    // 1. Buscamos no banco APENAS o usuário com aquele email
+    // O '?' previne injeção de SQL
+    const [usuarios] = await pool.query('SELECT * FROM clientes WHERE email = ?', [email]);
+
+    // 2. Se a lista vier vazia, o usuário não existe
+    if (usuarios.length === 0) {
+      // Dica: idealmente, envie uma mensagem de erro para a tela
+      console.log("Usuário não encontrado!");
+      return res.redirect('/');
     }
-});
 
-app.post('/inicial', (req, res) => {
-    
-    res.render('inicial'); 
+    const usuario = usuarios[0]; // Pegamos o primeiro (e único) resultado
+
+    req.session.user = {
+      id: usuario.id,
+      nome: usuario.nome,
+      tipo: usuario.tipo_usuario // admin, gerente, etc.
+    };
+    // 3. Verificamos se a senha bate
+    // ATENÇÃO: Em produção, use bcrypt.compare(senha, usuario.senha)
+    if (senha === usuario.senha) {
+
+      console.log(`Login realizado: ${usuario.nome} (${usuario.tipo_usuario})`);
+      return res.redirect('/inicial');
+
+
+    } else {
+      console.log("Senha incorreta!");
+      return res.redirect('/');
+    }
+
+  } catch (erro) {
+    console.error("Erro no login:", erro);
+    res.status(500).send("Erro no servidor");
+  }
 });
 app.get('/inicial', (req, res) => {
   res.render('inicial');
@@ -46,11 +108,11 @@ app.get('/inicial', (req, res) => {
 
 
 app.get('/perfil', (req, res) => {
-    res.render('perfil');
+  res.render('perfil');
 });
 
 
-app.get("/fila-pedidos", async (req, res) => {
+app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
   try {
     const [rows] = await pool.query(`
   SELECT p.*, c.nome AS nome_cliente
@@ -58,7 +120,7 @@ app.get("/fila-pedidos", async (req, res) => {
   JOIN clientes c ON p.id_cliente = c.id
 `);
 
-     const pedidosFormatados = rows.map(p => {
+    const pedidosFormatados = rows.map(p => {
       const data = new Date(p.data_pedido);
       const dia = String(data.getDate()).padStart(2, '0');
       const mes = String(data.getMonth() + 1).padStart(2, '0');
@@ -78,13 +140,13 @@ app.get("/fila-pedidos", async (req, res) => {
 });
 
 app.get("/lista-clientes", async (req, res) => {
-  try{
+  try {
     const [rows] = await pool.query(
       'SELECT * FROM clientes'
     )
 
-    res.render("lista-clientes", {clientes: rows});
-  }catch (err) {
+    res.render("lista-clientes", { clientes: rows });
+  } catch (err) {
     console.error("Erro ao buscar clientes:", err);
     res.status(500).send("Erro ao buscar clientes");
   }
@@ -134,48 +196,9 @@ app.post("/editar-pedido", async (req, res) => {
   }
 });
 
-app.post('/', async (req, res) => {
-    const { email, senha } = req.body; // Pega o que o usuário digitou
 
-    try {
-        // 1. Buscamos no banco APENAS o usuário com aquele email
-        // O '?' previne injeção de SQL
-        const [usuarios] = await pool.query('SELECT * FROM clientes WHERE email = ?', [email]);
-
-        // 2. Se a lista vier vazia, o usuário não existe
-        if (usuarios.length === 0) {
-            // Dica: idealmente, envie uma mensagem de erro para a tela
-            console.log("Usuário não encontrado!");
-            return res.redirect('/'); 
-        }
-
-        const usuario = usuarios[0]; // Pegamos o primeiro (e único) resultado
-
-        // 3. Verificamos se a senha bate
-        // ATENÇÃO: Em produção, use bcrypt.compare(senha, usuario.senha)
-        if (senha === usuario.senha) {
-            
-            console.log(`Login realizado: ${usuario.nome} (${usuario.tipo_usuario})`);
-
-            // 4. Verificamos o tipo e redirecionamos
-            if (usuario.tipo_usuario === 'admin') {
-                return res.redirect('/fila-pedidos'); // Admin vai para o Kanban
-            } else {
-                return res.redirect('/cardapio'); // Cliente vai para o cardápio (ou inicial)
-            }
-
-        } else {
-            console.log("Senha incorreta!");
-            return res.redirect('/');
-        }
-
-    } catch (erro) {
-        console.error("Erro no login:", erro);
-        res.status(500).send("Erro no servidor");
-    }
-});
 // Inicia o servidor
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
