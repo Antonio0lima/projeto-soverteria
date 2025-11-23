@@ -12,20 +12,24 @@
 
         <main class="conteudo-principal">
 
-            <section class="card painel-opcoes">
-                <div class="opcoes-header"><i class="fas fa-sliders-h"></i></div>
-                <div class="opcoes-body">
-                    <div class="item-grid">
-                            <% produtos.forEach(produto => { %>
-                                <div class="item">
-                                    <div class="item-circulo"></div>
-                                    <span><%= produto.nome %></span>
-                                </div>
-                            <% }) %>
-                        </div>
-                    </div>
+            <<section class="card painel-opcoes">
+    <div class="opcoes-header">
+        <i class="fas fa-sliders-h"></i>
+    </div>
+
+    <div class="opcoes-body">
+        <div class="item-grid">
+
+            <% produtos.forEach(produto => { %>
+                <div class="item">
+                    <div class="item-circulo"></div>
+                    <span><%= produto.nome %></span>
                 </div>
-            </section>
+            <% }) %>
+
+        </div> <!-- fecha item-grid -->
+    </div> <!-- fecha opcoes-body -->
+</section> <!-- fecha painel-opcoes -->
 
             <section class="card painel-info-opcoes">
                 A
