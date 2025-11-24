@@ -3,7 +3,8 @@
     --cor-laranja-principal: #ff914d;
     --cor-vermelho-botao: #ff5e6a;
     --cor-amarelo-claro: #EDE574;
-    --cor-sombra: #aaaaaa;
+    --cor-amarelo-destaque: #fff3cd;
+    --cor-laranja-destaque: #ffcc99;
     --cor-texto-escuro: #333;
 }
 
@@ -23,45 +24,39 @@ body {
 /* GRID PRINCIPAL */
 .conteudo-principal {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1.5fr; /* Aumentei um pouco o lado direito */
+    grid-template-rows: auto auto;
     grid-template-areas:
-        "opcoes info-opcoes"
-        "produto-escolhido produto-escolhido";
+        "opcoes lista-produtos"
+        "opcoes produto-escolhido";
     gap: 20px;
+    height: 80vh; /* Altura fixa para permitir scroll interno */
+    min-height: 600px;
 }
 
 .card {
-    border-radius: 55px !important;
-    box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.2);
-    font-size: 2.5em;
+    border-radius: 30px !important; /* Arredondamento ajustado */
+    box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.15);
     color: var(--cor-texto-escuro);
+    background-color: var(--cor-amarelo-claro);
+    overflow: hidden; /* Importante para o conteúdo não vazar */
 }
 
-/* PAINEL OPÇÕES */
+/* --- DIV 1: ESQUERDA (CATEGORIAS) --- */
 .painel-opcoes {
     grid-area: opcoes;
-    background-color: var(--cor-amarelo-claro);
     display: flex;
     flex-direction: column;
-    min-height: 400px;
-    overflow: hidden;
-    border-radius: 55px !important;
 }
 
 .opcoes-header {
     background-color: var(--cor-laranja-principal);
-    padding: 10px 15px;
+    padding: 15px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    border-top-left-radius: 55px !important;
-    border-top-right-radius: 55px !important;
 }
-
-.opcoes-header i {
-    color: white;
-    font-size: 1.2em;
-}
+.opcoes-header i { color: white; font-size: 1.5em; }
 
 .opcoes-body {
     flex-grow: 1;
@@ -69,104 +64,119 @@ body {
     overflow-y: auto;
 }
 
-.opcoes-body::-webkit-scrollbar { width: 8px; }
-.opcoes-body::-webkit-scrollbar-thumb { 
-    background-color: #ffd699;
-    border-radius: 10px;
-    border: 2px solid var(--cor-amarelo-claro);
+/* Botão da Categoria */
+.categoria-botao {
+    padding: 20px 15px;
+    margin: 5px 0;
+    border-radius: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.4);
+    transition: all 0.2s;
 }
-.opcoes-body::-webkit-scrollbar-track { background: var(--cor-amarelo-claro); }
 
-.item-grid {
+.categoria-botao:hover {
+    background-color: var(--cor-amarelo-destaque);
+    transform: translateX(5px);
+}
+
+.categoria-botao.ativo {
+    background-color: var(--cor-laranja-principal);
+    color: white;
+}
+.categoria-botao.ativo h2 { color: white; }
+.categoria-botao.ativo .seta-lateral { color: white; }
+
+.categoria-botao h2 {
+    margin: 0;
+    font-size: 1.2em;
+    color: var(--cor-texto-escuro);
+}
+
+.seta-lateral { color: #888; font-size: 0.8em; }
+
+
+/* --- DIV 2: DIREITA SUPERIOR (GRID DE PRODUTOS) --- */
+.painel-lista-produtos {
+    grid-area: lista-produtos;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow-y: auto; /* Scroll se tiver muitos produtos */
+    position: relative;
+    min-height: 300px;
+}
+
+/* Mensagem quando não tem nada selecionado */
+.msg-vazia {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #777;
+    opacity: 0.7;
+}
+.msg-vazia i { font-size: 2em; margin-bottom: 10px; }
+
+/* O Grid de bolinhas */
+.grid-produtos-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 20px;
+    width: 100%;
     justify-items: center;
 }
 
-/* ITENS DE PRODUTO */
+/* Estilo do Produto (Bolinha) */
 .item {
     text-align: center;
-    font-size: 0.5em;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition: 0.2s;
+    width: 100px; /* Largura fixa para alinhar */
 }
 
 .item-circulo {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     background-color: white;
-    border-radius: 50% !important;
-    margin-bottom: 5px;
-    transition: 0.2s ease;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    box-shadow: 2px 4px 6px rgba(0,0,0,0.1);
+    transition: 0.2s;
 }
 
 .item span {
+    font-size: 0.9em;
+    font-weight: bold;
     color: var(--cor-texto-escuro);
-    transition: 0.2s ease;
+    display: block;
 }
 
-/* HOVER — tudo fica branco */
-.item:hover .item-circulo {
-    background-color: #ffffff;
-    transform: scale(1.06);
-}
-
-.item:hover span {
-    color: #ffffff;
-}
-
-/* SELECIONADO */
+.item:hover .item-circulo { transform: scale(1.1); }
 .item.selecionado .item-circulo {
     background-color: var(--cor-laranja-principal);
+    border: 3px solid white;
 }
 
-.item.selecionado span {
-    color: var(--cor-laranja-principal);
-}
 
-/* PAINEL A */
-.painel-info-opcoes {
-    grid-area: info-opcoes;
-    background-color: var(--cor-amarelo-claro);
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 55px !important;
-}
-
-.botao-adicionar {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background-color: var(--cor-laranja-principal);
-    border-radius: 40px !important;
-    border: none;
-    color: white;
-    font-size: 1.5em;
-    cursor: pointer;
-    box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* PAINEL B */
+/* --- DIV 3: DIREITA INFERIOR (DETALHES) --- */
 .painel-produto-escolhido {
     grid-area: produto-escolhido;
-    background-color: var(--cor-amarelo-claro);
-    min-height: 250px;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 55px !important;
+    min-height: 200px;
 }
 
-/* BOTÃO FINAL */
 .container-botao-final {
     display: flex;
     justify-content: center;
-    padding: 30px 0;
+    padding: 20px 0;
+    grid-column: 1 / -1; /* Ocupa toda a largura embaixo */
 }
 
 .botao-confirmacao {
@@ -174,20 +184,25 @@ body {
     width: 250px;
     height: 70px;
     border: none;
-    border-radius: 60px !important;
+    border-radius: 60px;
     color: white;
     font-size: 2.5em;
     cursor: pointer;
     box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* RESPONSIVO */
+/* Scrollbars bonitas */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background-color: #ffd699; border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
 @media (max-width: 900px) {
     .conteudo-principal {
         grid-template-columns: 1fr;
         grid-template-areas:
             "opcoes"
-            "info-opcoes"
+            "lista-produtos"
             "produto-escolhido";
+        height: auto;
     }
 }

@@ -24,16 +24,55 @@ app.get('/', (req, res) => {
     res.render('loginEregistro'); // renderiza views/loginEregistro.ejs como primeira pagina
 });
 
-app.get('/cardapio',async(req, res) => {
-    try{
-      const [rows]=await pool.query('select * from categorias');
-      console.log("Produtos carregados:", rows);
-      res.render('cardapio',{produtos: rows});
-    }catch(err){
-      console.error("Erro ao buscar produtos:", err);
-      res.status(500).send("Erro ao buscar produtos");
-    }
+app.get('/cardapio', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        c.id AS categoria_id,
+        c.nome AS categoria,
+        p.id AS produto_id,
+        p.nome AS produto,
+        p.descricao,
+        t.nome AS tamanho,
+        pt.preco
+      FROM categorias c
+      LEFT JOIN produtos p ON p.categoria_id = c.id
+      LEFT JOIN produtos_tamanhos pt ON pt.produto_id = p.id
+      LEFT JOIN tamanhos t ON t.id = pt.tamanho_id
+      ORDER BY c.id, p.id;
+    `);
+
+    // AGRUPAR EM OBJETO CORRETO
+    const categorias = [];
+
+    rows.forEach(r => {
+      let cat = categorias.find(c => c.id === r.categoria_id);
+      if (!cat) {
+        cat = { id: r.categoria_id, nome: r.categoria, produtos: [] };
+        categorias.push(cat);
+      }
+
+      if (r.produto_id) {
+        let prod = cat.produtos.find(p => p.id === r.produto_id);
+        if (!prod) {
+          prod = { id: r.produto_id, nome: r.produto, descricao: r.descricao, opcoes: [] };
+          cat.produtos.push(prod);
+        }
+
+        if (r.tamanho && r.preco != null) {
+          prod.opcoes.push({ tamanho: r.tamanho, preco: r.preco });
+        }
+      }
+    });
+
+    res.render("cardapio", { categorias });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro no servidor");
+  }
 });
+
 app.use(express.urlencoded({ extended: true })); // para ler dados do formulário
 app.post('/inicial', (req, res) => {
     // Aqui você pode acessar os dados do formulário com req.body.email, req.body.senha
