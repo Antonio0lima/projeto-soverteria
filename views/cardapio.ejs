@@ -63,13 +63,16 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // --- 1. CARREGAR DADOS ---
+            // Variáveis Globais
             let dadosDoBanco = [];
+            let produtoEmVisualizacao = null;
+
+            // --- 1. CARREGAR DADOS ---
             try {
                 const inputDados = document.getElementById('dados-server');
                 if (inputDados && inputDados.value) {
                     dadosDoBanco = JSON.parse(inputDados.value);
-                    console.log("Cardápio carregado com sucesso.");
+                    console.log("Cardápio carregado.");
                 }
             } catch (err) {
                 console.error("Erro ao ler dados:", err);
@@ -80,7 +83,8 @@
             const painelDetalhes = document.querySelector('.painel-produto-escolhido');
             const msgVazia = document.querySelector('.msg-vazia');
             const botoesCategoria = document.querySelectorAll('.categoria-botao');
-            const painelProdutosSection = document.getElementById('painel-produtos'); // Para o scroll
+            const painelProdutosSection = document.getElementById('painel-produtos');
+            const btnConfirmar = document.querySelector('.botao-confirmacao');
 
             // --- 2. VIGIAR CLIQUES NAS CATEGORIAS ---
             botoesCategoria.forEach(btn => {
@@ -90,23 +94,26 @@
                 });
             });
 
+            // --- 3. EVENTO DO BOTÃO CONFIRMAR ---
+            if(btnConfirmar) {
+                btnConfirmar.addEventListener('click', adicionarAoCarrinho);
+            }
+
             // --- FUNÇÃO: SELECIONAR CATEGORIA ---
             function selecionarCategoria(index, botaoClicado) {
-                // Visual
                 botoesCategoria.forEach(b => b.classList.remove('ativo'));
                 botaoClicado.classList.add('ativo');
+                
+                produtoEmVisualizacao = null; 
 
-                // Dados
                 const categoria = dadosDoBanco[index];
                 if (!categoria) return;
 
                 const listaProdutos = categoria.produtos;
 
-                // Limpa painéis
                 containerProdutos.innerHTML = '';
                 painelDetalhes.innerHTML = '<span style="color: #555; font-size: 0.6em;">Selecione um produto acima</span>';
 
-                // Verifica se tem produtos
                 if (!listaProdutos || listaProdutos.length === 0) {
                     msgVazia.style.display = 'flex';
                     msgVazia.querySelector('span').innerText = 'Categoria vazia.';
@@ -114,7 +121,6 @@
                 }
                 msgVazia.style.display = 'none';
 
-                // Renderiza Produtos
                 listaProdutos.forEach(prod => {
                     const div = document.createElement('div');
                     div.className = 'item';
@@ -130,20 +136,18 @@
                     containerProdutos.appendChild(div);
                 });
 
-                // AUTO-SCROLL (Celular)
                 if (window.innerWidth < 900) {
                     painelProdutosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }
 
-            // --- FUNÇÃO: SELECIONAR PRODUTO (COM ADICIONAIS) ---
+            // --- FUNÇÃO: SELECIONAR PRODUTO (ATUALIZADA) ---
             function selecionarProduto(produto, elementoHtml) {
-                console.log("Produto:", produto.nome);
+                console.log("Visualizando:", produto.nome);
+                produtoEmVisualizacao = produto;
 
-                // 1. Descobrir categoria atual para pegar os adicionais
                 const botaoAtivo = document.querySelector('.categoria-botao.ativo');
                 let listaAdicionais = [];
-                
                 if (botaoAtivo) {
                     const indexCat = botaoAtivo.getAttribute('data-index');
                     if (dadosDoBanco[indexCat] && dadosDoBanco[indexCat].adicionais) {
@@ -151,17 +155,26 @@
                     }
                 }
 
-                // 2. Visual Selecionado
                 document.querySelectorAll('.item').forEach(i => i.classList.remove('selecionado'));
                 elementoHtml.classList.add('selecionado');
 
-                // 3. Montar HTML dos Tamanhos
+                // --- GERAÇÃO DOS BOTÕES DE TAMANHO ---
                 let htmlTamanhos = '';
                 if (produto.opcoes && produto.opcoes.length > 0) {
+                    
+                    // LÓGICA DE AUTO-SELEÇÃO:
+                    // Se tiver só 1 opção, adiciona a classe 'tamanho-ativo' automaticamente
+                    const classeAutoSelect = produto.opcoes.length === 1 ? 'tamanho-ativo' : '';
+
                     produto.opcoes.forEach(opcao => {
                         let preco = parseFloat(opcao.preco).toFixed(2).replace('.', ',');
+                        
+                        // Adicionamos ${classeAutoSelect} na class do botão
                         htmlTamanhos += `
-                            <button class="btn-tamanho" onclick="toggleTamanho(this)">
+                            <button class="btn-tamanho ${classeAutoSelect}" 
+                                onclick="toggleTamanho(this)"
+                                data-tamanho="${opcao.tamanho}"
+                                data-preco="${opcao.preco}">
                                 <div class="nome-tamanho">${opcao.tamanho}</div>
                                 <div class="preco-tamanho">R$ ${preco}</div>
                             </button>
@@ -171,7 +184,7 @@
                     htmlTamanhos = '<p style="padding:10px; font-size:0.8em">Indisponível.</p>';
                 }
 
-                // 4. Montar HTML dos Adicionais
+                // --- GERAÇÃO DOS ADICIONAIS ---
                 let htmlAdicionais = '';
                 if (listaAdicionais.length > 0) {
                     htmlAdicionais += `<h3 style="margin: 20px 0 10px 0; font-size: 1.4em; color:#ff914d;">Turbine seu pedido:</h3>`;
@@ -184,46 +197,108 @@
 
                         htmlAdicionais += `
                             <label class="item-adicional">
-                                <input type="checkbox" name="adicional" value="${add.id}">
+                                <input type="checkbox" name="adicional" 
+                                    value="${add.id}" 
+                                    data-nome="${add.nome}" 
+                                    data-preco="${add.preco}">
                                 <span>${add.nome} <small>(${textoPreco})</small></span>
                             </label>
                         `;
                     });
-                    
                     htmlAdicionais += `</div>`;
                 }
 
-                // 5. Exibir Tudo no Painel 3
                 painelDetalhes.innerHTML = `
                     <div class="detalhes-container">
                         <h2 style="margin-bottom:5px;">${produto.nome}</h2>
                         <p style="font-size:0.8em; color:#666; margin-top:0;">${produto.descricao || ''}</p>
-                        
                         <hr style="opacity:0.2; margin:10px 0;">
                         
                         <div style="font-weight:bold; margin-bottom:5px; color:#555;">Escolha o tamanho:</div>
-                        <div class="flex-tamanhos">
-                            ${htmlTamanhos}
-                        </div>
-
+                        <div class="flex-tamanhos">${htmlTamanhos}</div>
                         ${htmlAdicionais}
                     </div>
                 `;
 
-                // AUTO-SCROLL (Celular)
                 if (window.innerWidth < 900) {
                     painelDetalhes.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }
 
-            // Função Global para marcar o botão de tamanho visualmente
+            // --- FUNÇÃO: MARCAR TAMANHO ---
             window.toggleTamanho = function(btn) {
                 document.querySelectorAll('.btn-tamanho').forEach(b => {
-                    b.style.borderColor = '#ccc';
-                    b.style.backgroundColor = 'white';
+                    b.classList.remove('tamanho-ativo');
                 });
-                btn.style.borderColor = '#ff914d';
-                btn.style.backgroundColor = '#fff3cd';
+                btn.classList.add('tamanho-ativo');
+            }
+
+            // --- FUNÇÃO PRINCIPAL: ADICIONAR AO CARRINHO ---
+            function adicionarAoCarrinho() {
+                if (!produtoEmVisualizacao) {
+                    alert("Por favor, selecione um produto primeiro.");
+                    return;
+                }
+
+                const btnTamanhoAtivo = document.querySelector('.btn-tamanho.tamanho-ativo');
+                if (!btnTamanhoAtivo) {
+                    alert("Você precisa escolher um tamanho!");
+                    const areaTamanhos = document.querySelector('.flex-tamanhos');
+                    if(areaTamanhos) areaTamanhos.style.border = "2px dashed red";
+                    setTimeout(() => { if(areaTamanhos) areaTamanhos.style.border = "none"; }, 2000);
+                    return;
+                }
+
+                const btnConfirmar = document.querySelector('.botao-confirmacao');
+                btnConfirmar.classList.add('animar');
+
+                setTimeout(() => {
+                    const tamanhoNome = btnTamanhoAtivo.getAttribute('data-tamanho');
+                    const tamanhoPreco = parseFloat(btnTamanhoAtivo.getAttribute('data-preco'));
+
+                    const checkboxes = document.querySelectorAll('input[name="adicional"]:checked');
+                    let listaAdicionaisEscolhidos = [];
+                    let totalAdicionais = 0;
+
+                    checkboxes.forEach(chk => {
+                        const addNome = chk.getAttribute('data-nome');
+                        const addPreco = parseFloat(chk.getAttribute('data-preco'));
+                        
+                        listaAdicionaisEscolhidos.push({
+                            id: chk.value,
+                            nome: addNome,
+                            preco: addPreco
+                        });
+                        totalAdicionais += addPreco;
+                    });
+
+                    const precoTotal = tamanhoPreco + totalAdicionais;
+
+                    const novoItem = {
+                        id_unico: Date.now(),
+                        produto_id: produtoEmVisualizacao.id,
+                        produto_nome: produtoEmVisualizacao.nome,
+                        tamanho: tamanhoNome,
+                        preco_base: tamanhoPreco,
+                        adicionais: listaAdicionaisEscolhidos,
+                        preco_total: precoTotal,
+                        quantidade: 1
+                    };
+
+                    console.log("Adicionando ao carrinho:", novoItem);
+
+                    let carrinho = JSON.parse(localStorage.getItem('carrinho_sorveteria') || '[]');
+                    carrinho.push(novoItem);
+                    localStorage.setItem('carrinho_sorveteria', JSON.stringify(carrinho));
+
+                    alert("✅ Produto adicionado ao carrinho!");
+
+                    document.querySelectorAll('.btn-tamanho').forEach(b => b.classList.remove('tamanho-ativo'));
+                    document.querySelectorAll('input[name="adicional"]').forEach(chk => chk.checked = false);
+                    
+                    btnConfirmar.classList.remove('animar');
+
+                }, 150);
             }
         });
     </script>
