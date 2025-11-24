@@ -1,130 +1,187 @@
-document.addEventListener("DOMContentLoaded", () => {
-    
-    console.log("Sistema de Cardápio Iniciado.");
+// server.js COMPLETO E ATUALIZADO
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import pool from './db.js';
+import dotenv from "dotenv";
+dotenv.config();
 
-    let dadosGerais = [];
+const app = express();
 
-    // --- TENTATIVA 1: Ler do Script JSON (Método Novo e Seguro) ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.set("view engine", "ejs");
+app.set("views", "./views");
+// Pasta pública para CSS, JS e imagens
+app.use(express.static(path.join(__dirname, 'public')));
+
+// --- ROTAS ---
+
+app.get('/', (req, res) => {
+    res.render('loginEregistro'); // Primeira página
+});
+
+// === ROTA PRINCIPAL ALTERADA ===
+app.get('/cardapio', async (req, res) => {
+  try {
+    // 1. Busca Categorias, Produtos e Tamanhos (Query Original)
+    const [rows] = await pool.query(`
+      SELECT 
+        c.id AS categoria_id,
+        c.nome AS categoria,
+        p.id AS produto_id,
+        p.nome AS produto,
+        p.descricao,
+        t.nome AS tamanho,
+        pt.preco
+      FROM categorias c
+      LEFT JOIN produtos p ON p.categoria_id = c.id
+      LEFT JOIN produtos_tamanhos pt ON pt.produto_id = p.id
+      LEFT JOIN tamanhos t ON t.id = pt.tamanho_id
+      ORDER BY c.id, p.id;
+    `);
+
+    // 2. NOVA BUSCA: Pega todos os adicionais do banco
+    // (Lembre-se de ter criado a tabela 'adicionais' no MySQL antes!)
+    let rowsAdicionais = [];
     try {
-        const elementoJson = document.getElementById('dados-json');
-        if (elementoJson && elementoJson.textContent.trim().length > 0) {
-            dadosGerais = JSON.parse(elementoJson.textContent);
-            console.log("Dados carregados via Script JSON.");
-        }
+        const [result] = await pool.query(`SELECT * FROM adicionais`);
+        rowsAdicionais = result;
     } catch (e) {
-        console.error("Erro ao ler JSON:", e);
+        console.warn("Tabela 'adicionais' não encontrada ou vazia. Ignorando adicionais.");
     }
 
-    // --- TENTATIVA 2: Ler da Variável Global (Método Antigo - Fallback) ---
-    if (dadosGerais.length === 0 && window.dadosCardapio) {
-        dadosGerais = window.dadosCardapio;
-        console.log("Dados carregados via Variável Global.");
-    }
+    // 3. AGRUPAR DADOS (Monta a estrutura JSON)
+    const categorias = [];
 
-    // --- VERIFICAÇÃO DE SEGURANÇA ---
-    if (dadosGerais.length === 0) {
-        alert("Atenção: Os dados do cardápio não foram carregados corretamente. Verifique se existem categorias cadastradas no banco.");
-        console.error("Dados vazios. O array de categorias está vazio.");
-        return; // Para o script aqui se não tiver dados
-    }
+    rows.forEach(r => {
+      // Tenta achar a categoria já criada no array
+      let cat = categorias.find(c => c.id === r.categoria_id);
+      
+      if (!cat) {
+        // Se não achou, cria a categoria nova
+        // E aqui INJETAMOS os adicionais dela
+        const adicionaisDaCategoria = rowsAdicionais.filter(a => a.categoria_id === r.categoria_id);
 
-    // Elementos da DOM
-    const botoesCategoria = document.querySelectorAll('.categoria-botao');
-    const containerProdutos = document.querySelector('.grid-produtos-container');
-    const painelDetalhes = document.querySelector('.painel-produto-escolhido');
-    const msgVazia = document.querySelector('.msg-vazia');
+        cat = { 
+            id: r.categoria_id, 
+            nome: r.categoria, 
+            produtos: [],
+            adicionais: adicionaisDaCategoria // <--- Campo Novo
+        };
+        categorias.push(cat);
+      }
 
-    // Verifica se encontrou os botões
-    if(botoesCategoria.length === 0) {
-        console.warn("Nenhum botão de categoria encontrado no HTML.");
-    }
+      // Adiciona o produto se existir
+      if (r.produto_id) {
+        let prod = cat.produtos.find(p => p.id === r.produto_id);
+        if (!prod) {
+          prod = { id: r.produto_id, nome: r.produto, descricao: r.descricao, opcoes: [] };
+          cat.produtos.push(prod);
+        }
 
-    // --- 1. CLIQUE NA CATEGORIA ---
-    botoesCategoria.forEach(btn => {
-        btn.addEventListener('click', () => {
-            console.log("Clique detectado na categoria!");
-
-            // a) Visual
-            botoesCategoria.forEach(b => b.classList.remove('ativo'));
-            btn.classList.add('ativo');
-
-            // b) Dados
-            const index = btn.getAttribute('data-index');
-            const categoriaSelecionada = dadosGerais[index];
-
-            console.log("Categoria selecionada:", categoriaSelecionada);
-
-            if (categoriaSelecionada) {
-                renderizarProdutos(categoriaSelecionada.produtos);
-            } else {
-                alert("Erro: Categoria não encontrada nos dados.");
-            }
-            
-            // d) Limpa a Div 3
-            painelDetalhes.innerHTML = '<span style="color: #555; font-size: 0.8em;">Selecione um produto acima</span>';
-        });
+        // Adiciona o tamanho/preço se existir
+        if (r.tamanho && r.preco != null) {
+          prod.opcoes.push({ tamanho: r.tamanho, preco: r.preco });
+        }
+      }
     });
 
-    // --- FUNÇÃO PARA DESENHAR PRODUTOS ---
-    function renderizarProdutos(listaProdutos) {
-        containerProdutos.innerHTML = ''; // Limpa a área
+    res.render("cardapio", { categorias });
 
-        if (!listaProdutos || listaProdutos.length === 0) {
-            msgVazia.style.display = 'flex';
-            msgVazia.querySelector('span').innerText = 'Nenhum produto nesta categoria.';
-            return;
-        }
+  } catch (err) {
+    console.error("Erro na rota /cardapio:", err);
+    res.status(500).send("Erro no servidor ao carregar cardápio");
+  }
+});
 
-        msgVazia.style.display = 'none'; // Esconde a mensagem "Selecione uma categoria"
+// --- OUTRAS ROTAS (Mantidas iguais) ---
 
-        listaProdutos.forEach(prod => {
-            const divItem = document.createElement('div');
-            divItem.classList.add('item');
-            
-            divItem.innerHTML = `
-                <div class="item-circulo"></div>
-                <span>${prod.nome}</span>
-            `;
+app.post('/inicial', (req, res) => {
+    res.render('inicial');
+});
 
-            divItem.addEventListener('click', () => {
-                console.log("Produto clicado:", prod.nome);
-                document.querySelectorAll('.item').forEach(i => i.classList.remove('selecionado'));
-                divItem.classList.add('selecionado');
-                mostrarDetalhes(prod);
-            });
+app.get('/inicial', (req, res) => {
+  res.render('inicial');
+});
 
-            containerProdutos.appendChild(divItem);
-        });
+app.get('/perfil', (req, res) => {
+    res.render('perfil');
+});
+
+app.get("/fila-pedidos", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT p.*, c.nome AS nome_cliente
+      FROM pedidos p
+      JOIN clientes c ON p.id_cliente = c.id
+    `);
+
+     const pedidosFormatados = rows.map(p => {
+      const data = new Date(p.data_pedido);
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = data.getFullYear();
+      const hora = String(data.getHours()).padStart(2, '0');
+      const min = String(data.getMinutes()).padStart(2, '0');
+      return {
+        ...p,
+        data_pedido: `${dia}/${mes}/${ano} ${hora}:${min}`
+      };
+    });
+    res.render("fila-pedidos", { pedidos: pedidosFormatados });
+  } catch (err) {
+    console.error("Erro ao buscar pedidos:", err);
+    res.status(500).send("Erro ao buscar pedidos");
+  }
+});
+
+app.get("/lista-clientes", async (req, res) => {
+  try{
+    const [rows] = await pool.query('SELECT * FROM clientes');
+    res.render("lista-clientes", {clientes: rows});
+  } catch (err) {
+    console.error("Erro ao buscar clientes:", err);
+    res.status(500).send("Erro ao buscar clientes");
+  }
+});
+
+app.post('/atualizar-status', async (req, res) => {
+  try {
+    const { id, novo_status } = req.body;
+    if (!id || !novo_status) {
+      return res.status(400).json({ error: 'Dados incompletos' });
     }
+    const [result] = await pool.query(
+      'UPDATE pedidos SET status = ? WHERE id = ?',
+      [novo_status, id]
+    );
+    res.json({ sucesso: true, linhasAfetadas: result.affectedRows });
+  } catch (err) {
+    console.error('Erro ao atualizar status:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    // --- FUNÇÃO PARA MOSTRAR TAMANHOS ---
-    function mostrarDetalhes(dadosProduto) {
-        let htmlTamanhos = '';
+app.post("/editar-pedido", async (req, res) => {
+  const { id, valor } = req.body;
+  try {
+    const [result] = await pool.query(
+      "UPDATE pedidos SET valor = ? WHERE id = ?",
+      [valor, id]
+    );
+    res.json({ ok: true, msg: "Valor atualizado!", linhas: result.affectedRows });
+  } catch (erro) {
+    console.error("Erro ao editar pedido:", erro);
+    res.status(500).json({ ok: false, erro: "Erro no servidor" });
+  }
+});
 
-        if (dadosProduto.opcoes && dadosProduto.opcoes.length > 0) {
-            dadosProduto.opcoes.forEach(opcao => {
-                const precoFormatado = parseFloat(opcao.preco).toFixed(2).replace('.', ',');
-                
-                htmlTamanhos += `
-                    <button class="btn-tamanho" style="margin: 5px; padding: 10px; cursor: pointer; border: 2px solid #ddd; border-radius: 10px; background: white;">
-                        <div style="font-weight:bold; color: #ff914d;">${opcao.tamanho}</div>
-                        <div style="font-size: 1.1em;">R$ ${precoFormatado}</div>
-                    </button>
-                `;
-            });
-        } else {
-            htmlTamanhos = '<p>Indisponível.</p>';
-        }
-
-        painelDetalhes.innerHTML = `
-            <div style="text-align: center; width: 100%; animation: fadeIn 0.3s;">
-                <h2 style="margin-bottom: 5px;">${dadosProduto.nome}</h2>
-                <p style="font-size: 0.8em; color: #666; margin-top: 0;">${dadosProduto.descricao || ''}</p>
-                <hr style="opacity: 0.2; margin: 10px 0;">
-                <div class="lista-tamanhos" style="display: flex; flex-wrap: wrap; justify-content: center;">
-                    ${htmlTamanhos}
-                </div>
-            </div>
-        `;
-    }
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

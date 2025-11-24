@@ -26,15 +26,12 @@ app.get('/', (req, res) => {
 
 app.get('/cardapio', async (req, res) => {
   try {
+    // 1. Busca Categorias, Produtos e Tamanhos (Query Antiga)
     const [rows] = await pool.query(`
       SELECT 
-        c.id AS categoria_id,
-        c.nome AS categoria,
-        p.id AS produto_id,
-        p.nome AS produto,
-        p.descricao,
-        t.nome AS tamanho,
-        pt.preco
+        c.id AS categoria_id, c.nome AS categoria,
+        p.id AS produto_id, p.nome AS produto, p.descricao,
+        t.nome AS tamanho, pt.preco
       FROM categorias c
       LEFT JOIN produtos p ON p.categoria_id = c.id
       LEFT JOIN produtos_tamanhos pt ON pt.produto_id = p.id
@@ -42,13 +39,24 @@ app.get('/cardapio', async (req, res) => {
       ORDER BY c.id, p.id;
     `);
 
-    // AGRUPAR EM OBJETO CORRETO
+    // 2. Busca TODOS os adicionais
+    const [rowsAdicionais] = await pool.query(`SELECT * FROM adicionais`);
+
+    // 3. Monta o Objeto Principal
     const categorias = [];
 
     rows.forEach(r => {
       let cat = categorias.find(c => c.id === r.categoria_id);
       if (!cat) {
-        cat = { id: r.categoria_id, nome: r.categoria, produtos: [] };
+        // AQUI: Filtramos os adicionais que pertencem a esta categoria
+        const adicionaisDaCategoria = rowsAdicionais.filter(a => a.categoria_id === r.categoria_id);
+        
+        cat = { 
+            id: r.categoria_id, 
+            nome: r.categoria, 
+            produtos: [],
+            adicionais: adicionaisDaCategoria // <--- Novo campo adicionado!
+        };
         categorias.push(cat);
       }
 

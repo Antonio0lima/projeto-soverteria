@@ -24,22 +24,22 @@ body {
 /* GRID PRINCIPAL */
 .conteudo-principal {
     display: grid;
-    grid-template-columns: 1fr 1.5fr; /* Aumentei um pouco o lado direito */
+    grid-template-columns: 1fr 1.5fr;
     grid-template-rows: auto auto;
     grid-template-areas:
         "opcoes lista-produtos"
         "opcoes produto-escolhido";
     gap: 20px;
-    height: 80vh; /* Altura fixa para permitir scroll interno */
+    height: 85vh;
     min-height: 600px;
 }
 
 .card {
-    border-radius: 30px !important; /* Arredondamento ajustado */
+    border-radius: 30px !important;
     box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.15);
     color: var(--cor-texto-escuro);
     background-color: var(--cor-amarelo-claro);
-    overflow: hidden; /* Importante para o conteúdo não vazar */
+    overflow: hidden;
 }
 
 /* --- DIV 1: ESQUERDA (CATEGORIAS) --- */
@@ -64,7 +64,6 @@ body {
     overflow-y: auto;
 }
 
-/* Botão da Categoria */
 .categoria-botao {
     padding: 20px 15px;
     margin: 5px 0;
@@ -98,18 +97,17 @@ body {
 .seta-lateral { color: #888; font-size: 0.8em; }
 
 
-/* --- DIV 2: DIREITA SUPERIOR (GRID DE PRODUTOS) --- */
+/* --- DIV 2: DIREITA SUPERIOR (PRODUTOS) --- */
 .painel-lista-produtos {
     grid-area: lista-produtos;
     display: flex;
     flex-direction: column;
     padding: 20px;
-    overflow-y: auto; /* Scroll se tiver muitos produtos */
+    overflow-y: auto;
     position: relative;
-    min-height: 300px;
+    min-height: 250px;
 }
 
-/* Mensagem quando não tem nada selecionado */
 .msg-vazia {
     display: flex;
     flex-direction: column;
@@ -121,7 +119,6 @@ body {
 }
 .msg-vazia i { font-size: 2em; margin-bottom: 10px; }
 
-/* O Grid de bolinhas */
 .grid-produtos-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -130,12 +127,11 @@ body {
     justify-items: center;
 }
 
-/* Estilo do Produto (Bolinha) */
 .item {
     text-align: center;
     cursor: pointer;
     transition: 0.2s;
-    width: 100px; /* Largura fixa para alinhar */
+    width: 100px;
 }
 
 .item-circulo {
@@ -162,21 +158,39 @@ body {
 }
 
 
-/* --- DIV 3: DIREITA INFERIOR (DETALHES) --- */
+/* --- DIV 3: DIREITA INFERIOR (DETALHES & ADICIONAIS) --- */
 .painel-produto-escolhido {
     grid-area: produto-escolhido;
     padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 200px;
+    min-height: 250px;
+    position: relative;
+}
+
+/* Container interno para organizar tudo */
+.detalhes-container {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Título de Adicionais GRANDE */
+.detalhes-container h3 {
+    font-size: 1.4em !important;
+    margin-top: 25px !important;
+    margin-bottom: 15px !important;
+    color: var(--cor-laranja-principal);
 }
 
 .container-botao-final {
     display: flex;
     justify-content: center;
     padding: 20px 0;
-    grid-column: 1 / -1; /* Ocupa toda a largura embaixo */
+    grid-column: 1 / -1;
 }
 
 .botao-confirmacao {
@@ -189,6 +203,84 @@ body {
     font-size: 2.5em;
     cursor: pointer;
     box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Grade de Tamanhos --- */
+.flex-tamanhos {
+    display: flex; 
+    justify-content: center; 
+    flex-wrap: wrap; 
+    gap: 15px; /* Mais espaço entre os botões */
+    margin-bottom: 20px;
+}
+
+.btn-tamanho {
+    padding: 15px 20px; /* Botões maiores */
+    cursor: pointer; 
+    border-radius: 12px; 
+    border: 2px solid #ccc; 
+    background: white;
+    transition: 0.2s;
+    min-width: 100px;
+}
+.btn-tamanho:hover { border-color: var(--cor-laranja-principal); }
+
+.nome-tamanho { font-weight: bold; color: var(--cor-laranja-principal); font-size: 1.2em; }
+.preco-tamanho { font-size: 1em; color: #555; }
+
+
+/* --- Lista de Adicionais (Checkboxes Gigantes) --- */
+.lista-adicionais {
+    display: grid;
+    /* Colunas largas (min 220px) para caber bem o texto */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+    text-align: left;
+    background-color: rgba(255,255,255,0.3);
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.item-adicional {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px 20px; /* Área de clique grande */
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.2em; /* Letra grande */
+    font-weight: 500;
+    transition: 0.2s;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.item-adicional:hover {
+    background-color: white;
+    border-color: var(--cor-laranja-principal);
+    transform: translateY(-2px);
+}
+
+/* Checkbox Aumentado */
+.item-adicional input { 
+    margin-right: 15px; 
+    transform: scale(2.0); /* Dobro do tamanho */
+    cursor: pointer;
+    accent-color: var(--cor-laranja-principal);
+}
+
+.item-adicional span { 
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-adicional small { 
+    color: var(--cor-laranja-principal); 
+    font-weight: bold; 
+    font-size: 0.9em;
+    margin-top: 4px;
 }
 
 /* Scrollbars bonitas */
@@ -204,5 +296,11 @@ body {
             "lista-produtos"
             "produto-escolhido";
         height: auto;
+    }
+    .card { min-height: 200px; }
+    
+    /* No celular, os adicionais ocupam a largura toda para ficar fácil de tocar */
+    .lista-adicionais {
+        grid-template-columns: 1fr;
     }
 }

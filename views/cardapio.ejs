@@ -63,38 +63,36 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // 1. CARREGAR DADOS
+            // --- 1. CARREGAR DADOS ---
             let dadosDoBanco = [];
             try {
                 const inputDados = document.getElementById('dados-server');
                 if (inputDados && inputDados.value) {
                     dadosDoBanco = JSON.parse(inputDados.value);
-                    console.log("Cardápio carregado:", dadosDoBanco.length, "categorias.");
+                    console.log("Cardápio carregado com sucesso.");
                 }
             } catch (err) {
                 console.error("Erro ao ler dados:", err);
             }
 
-            // Elementos
+            // Elementos DOM
             const containerProdutos = document.querySelector('.grid-produtos-container');
             const painelDetalhes = document.querySelector('.painel-produto-escolhido');
             const msgVazia = document.querySelector('.msg-vazia');
             const botoesCategoria = document.querySelectorAll('.categoria-botao');
+            const painelProdutosSection = document.getElementById('painel-produtos'); // Para o scroll
 
-            // 2. VIGIAR CLIQUES NAS CATEGORIAS
+            // --- 2. VIGIAR CLIQUES NAS CATEGORIAS ---
             botoesCategoria.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // Pega o índice que guardamos no HTML (data-index)
                     const index = btn.getAttribute('data-index');
-                    console.log("Clicou na categoria índice:", index);
-
                     selecionarCategoria(index, btn);
                 });
             });
 
-            // --- FUNÇÃO PARA MOSTRAR OS PRODUTOS ---
+            // --- FUNÇÃO: SELECIONAR CATEGORIA ---
             function selecionarCategoria(index, botaoClicado) {
-                // Visual (Amarelo)
+                // Visual
                 botoesCategoria.forEach(b => b.classList.remove('ativo'));
                 botaoClicado.classList.add('ativo');
 
@@ -104,11 +102,11 @@
 
                 const listaProdutos = categoria.produtos;
 
-                // Limpa telas
+                // Limpa painéis
                 containerProdutos.innerHTML = '';
                 painelDetalhes.innerHTML = '<span style="color: #555; font-size: 0.6em;">Selecione um produto acima</span>';
 
-                // Verifica vazio
+                // Verifica se tem produtos
                 if (!listaProdutos || listaProdutos.length === 0) {
                     msgVazia.style.display = 'flex';
                     msgVazia.querySelector('span').innerText = 'Categoria vazia.';
@@ -125,30 +123,47 @@
                         <span>${prod.nome}</span>
                     `;
                     
-                    // Clique no Produto
                     div.addEventListener('click', () => {
                         selecionarProduto(prod, div);
                     });
 
                     containerProdutos.appendChild(div);
                 });
+
+                // AUTO-SCROLL (Celular)
+                if (window.innerWidth < 900) {
+                    painelProdutosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
 
-            // --- FUNÇÃO PARA MOSTRAR TAMANHOS ---
+            // --- FUNÇÃO: SELECIONAR PRODUTO (COM ADICIONAIS) ---
             function selecionarProduto(produto, elementoHtml) {
                 console.log("Produto:", produto.nome);
 
+                // 1. Descobrir categoria atual para pegar os adicionais
+                const botaoAtivo = document.querySelector('.categoria-botao.ativo');
+                let listaAdicionais = [];
+                
+                if (botaoAtivo) {
+                    const indexCat = botaoAtivo.getAttribute('data-index');
+                    if (dadosDoBanco[indexCat] && dadosDoBanco[indexCat].adicionais) {
+                        listaAdicionais = dadosDoBanco[indexCat].adicionais;
+                    }
+                }
+
+                // 2. Visual Selecionado
                 document.querySelectorAll('.item').forEach(i => i.classList.remove('selecionado'));
                 elementoHtml.classList.add('selecionado');
 
+                // 3. Montar HTML dos Tamanhos
                 let htmlTamanhos = '';
                 if (produto.opcoes && produto.opcoes.length > 0) {
                     produto.opcoes.forEach(opcao => {
                         let preco = parseFloat(opcao.preco).toFixed(2).replace('.', ',');
                         htmlTamanhos += `
-                            <button class="btn-tamanho" style="margin:5px; padding:10px; cursor:pointer; border-radius:10px; border:1px solid #ccc; background:white;">
-                                <div style="font-weight:bold; color:#ff914d;">${opcao.tamanho}</div>
-                                <div>R$ ${preco}</div>
+                            <button class="btn-tamanho" onclick="toggleTamanho(this)">
+                                <div class="nome-tamanho">${opcao.tamanho}</div>
+                                <div class="preco-tamanho">R$ ${preco}</div>
                             </button>
                         `;
                     });
@@ -156,16 +171,59 @@
                     htmlTamanhos = '<p style="padding:10px; font-size:0.8em">Indisponível.</p>';
                 }
 
+                // 4. Montar HTML dos Adicionais
+                let htmlAdicionais = '';
+                if (listaAdicionais.length > 0) {
+                    htmlAdicionais += `<h3 style="margin: 20px 0 10px 0; font-size: 1.4em; color:#ff914d;">Turbine seu pedido:</h3>`;
+                    htmlAdicionais += `<div class="lista-adicionais">`;
+                    
+                    listaAdicionais.forEach(add => {
+                        let textoPreco = parseFloat(add.preco) > 0 
+                            ? `+ R$ ${parseFloat(add.preco).toFixed(2).replace('.', ',')}` 
+                            : 'Grátis';
+
+                        htmlAdicionais += `
+                            <label class="item-adicional">
+                                <input type="checkbox" name="adicional" value="${add.id}">
+                                <span>${add.nome} <small>(${textoPreco})</small></span>
+                            </label>
+                        `;
+                    });
+                    
+                    htmlAdicionais += `</div>`;
+                }
+
+                // 5. Exibir Tudo no Painel 3
                 painelDetalhes.innerHTML = `
-                    <div style="text-align:center; width:100%; animation:fadeIn 0.3s;">
+                    <div class="detalhes-container">
                         <h2 style="margin-bottom:5px;">${produto.nome}</h2>
                         <p style="font-size:0.8em; color:#666; margin-top:0;">${produto.descricao || ''}</p>
+                        
                         <hr style="opacity:0.2; margin:10px 0;">
-                        <div style="display:flex; justify-content:center; flex-wrap:wrap;">
+                        
+                        <div style="font-weight:bold; margin-bottom:5px; color:#555;">Escolha o tamanho:</div>
+                        <div class="flex-tamanhos">
                             ${htmlTamanhos}
                         </div>
+
+                        ${htmlAdicionais}
                     </div>
                 `;
+
+                // AUTO-SCROLL (Celular)
+                if (window.innerWidth < 900) {
+                    painelDetalhes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            // Função Global para marcar o botão de tamanho visualmente
+            window.toggleTamanho = function(btn) {
+                document.querySelectorAll('.btn-tamanho').forEach(b => {
+                    b.style.borderColor = '#ccc';
+                    b.style.backgroundColor = 'white';
+                });
+                btn.style.borderColor = '#ff914d';
+                btn.style.backgroundColor = '#fff3cd';
             }
         });
     </script>
