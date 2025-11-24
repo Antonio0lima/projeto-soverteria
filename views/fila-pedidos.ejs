@@ -11,7 +11,11 @@
 </head>
 
 <body> 
-  <%- include('partials/navbar/navbar') %>
+  <% if (usuario && usuario.tipo==="admin" ) { %>
+        <%- include("partials/navbar/navbar-adm") %>
+            <% } else { %>
+                <%- include("partials/navbar/navbar") %>
+                    <% } %>
   <!-- Overlay do popup -->
 <div id="overlay" class="overlay"></div>
 

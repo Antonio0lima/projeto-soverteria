@@ -10,10 +10,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
 </head>
 <body>
-
-    <%- include('partials/navbar/navbar') %>
-
-    <div class="pagina-container">
+    <% if (usuario && usuario.tipo==="admin" ) { %>
+        <%- include("partials/navbar/navbar-adm") %>
+            <% } else { %>
+                <%- include("partials/navbar/navbar") %>
+                    <% } %>
+     <div class="pagina-container">
 
         <main class="conteudo-principal">
 
