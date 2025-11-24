@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
+
+:root {
+    --cor-fundo: #f0f0f0;
+    --cor-card: #EDE574;
+    --cor-destaque: #ff914d;
+    --cor-botao: #ff5e6a;
+    --cor-texto: #333;
+}
+
+body {
+    font-family: 'Inconsolata', monospace;
+    background-color: var(--cor-fundo);
+    margin: 0;
+    padding: 0;
+}
+
+.pagina-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.titulo-carrinho {
+    text-align: center;
+    color: var(--cor-destaque);
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 0px #fff;
+}
+
+.carrinho-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.card {
+    background-color: var(--cor-card);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 5px 8px 12px rgba(0,0,0,0.15);
+}
+
+/* Lista de Itens */
+.item-carrinho {
+    background-color: rgba(255,255,255,0.6);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 5px solid var(--cor-destaque);
+}
+
+.info-item h3 { margin: 0; font-size: 1.2em; }
+.info-item p { margin: 5px 0; font-size: 0.9em; color: #555; }
+.info-item .adicionais { font-size: 0.8em; color: #d35400; font-style: italic; }
+
+.preco-acoes {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.preco-item {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.btn-remover {
+    background: none;
+    border: none;
+    color: #c0392b;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+.btn-remover:hover { text-decoration: underline; }
+
+/* Resumo */
+.linha-resumo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.total {
+    font-weight: bold;
+    font-size: 1.4em;
+    color: var(--cor-botao);
+    margin-top: 15px;
+}
+
+.form-observacao { margin: 20px 0; }
+.form-observacao label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-observacao textarea {
+    width: 100%;
+    height: 80px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+/* --- BOTÕES --- */
+.botao-finalizar, .botao-login-necessario {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+    border: none;
+    border-radius: 50px;
+    background-color: var(--cor-botao);
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s, background-color 0.2s;
+    margin-bottom: 15px;
+}
+
+.botao-finalizar:hover { transform: scale(1.02); background-color: #ff404e; }
+.botao-login-necessario { background-color: #555; }
+
+/* NOVO BOTÃO CONTINUAR */
+.botao-continuar {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: none;
+    border-radius: 50px;
+    background-color: var(--cor-destaque); /* Laranja */
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 10px; /* Espaço para o botão de limpar */
+    transition: transform 0.2s;
+}
+.botao-continuar:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+}
+
+.botao-limpar {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 5px;
+    padding: 10px;
+    background: none;
+    border: 2px solid #777;
+    border-radius: 50px;
+    cursor: pointer;
+    color: #555;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.botao-limpar:hover {
+    background-color: rgba(0,0,0,0.05);
+    color: #000;
+    border-color: #000;
+}
+
+@media (max-width: 768px) {
+    .carrinho-grid { grid-template-columns: 1fr; }
+}
