@@ -1,11 +1,10 @@
-// server.js
+// server.js (Mantendo o original e adicionando o carrinho)
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pool from './db.js';
 import dotenv from "dotenv";
 import session from "express-session";
-
 
 dotenv.config();
 
@@ -44,9 +43,7 @@ function somenteAdmin(req, res, next) {
   next();
 }
 
-
-
-// Rotas
+// Rotas Originais (INTACTAS)
 app.get('/', (req, res) => {
   res.render('loginEregistro');
 });
@@ -82,7 +79,7 @@ app.get('/cardapio', async (req, res) => {
             id: r.categoria_id, 
             nome: r.categoria, 
             produtos: [],
-            adicionais: adicionaisDaCategoria // <--- Novo campo adicionado!
+            adicionais: adicionaisDaCategoria 
         };
         categorias.push(cat);
       }
@@ -109,35 +106,27 @@ app.get('/cardapio', async (req, res) => {
 });
 
 app.post('/inicial', async (req, res) => {
-  const { email, senha } = req.body; // Pega o que o usuário digitou
+  const { email, senha } = req.body; 
 
   try {
-    // 1. Buscamos no banco APENAS o usuário com aquele email
-    // O '?' previne injeção de SQL
     const [usuarios] = await pool.query('SELECT * FROM clientes WHERE email = ?', [email]);
 
-    // 2. Se a lista vier vazia, o usuário não existe
     if (usuarios.length === 0) {
-      // Dica: idealmente, envie uma mensagem de erro para a tela
       console.log("Usuário não encontrado!");
       return res.redirect('/');
     }
 
-    const usuario = usuarios[0]; // Pegamos o primeiro (e único) resultado
+    const usuario = usuarios[0]; 
 
     req.session.user = {
       id: usuario.id,
       nome: usuario.nome,
-      tipo: usuario.tipo_usuario // admin, gerente, etc.
+      tipo: usuario.tipo_usuario 
     };
-    // 3. Verificamos se a senha bate
-    // ATENÇÃO: Em produção, use bcrypt.compare(senha, usuario.senha)
-    if (senha === usuario.senha) {
 
+    if (senha === usuario.senha) {
       console.log(`Login realizado: ${usuario.nome} (${usuario.tipo_usuario})`);
       return res.redirect('/inicial');
-
-
     } else {
       console.log("Senha incorreta!");
       return res.redirect('/');
@@ -148,15 +137,14 @@ app.post('/inicial', async (req, res) => {
     res.status(500).send("Erro no servidor");
   }
 });
+
 app.get('/inicial', (req, res) => {
   res.render('inicial');
 });
 
-
 app.get('/perfil', (req, res) => {
   res.render('perfil');
 });
-
 
 app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
   try {
@@ -178,7 +166,7 @@ app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
         data_pedido: `${dia}/${mes}/${ano} ${hora}:${min}`
       };
     });
-    res.render("fila-pedidos", { pedidos: pedidosFormatados }); // envia 'pedidos' para o EJS
+    res.render("fila-pedidos", { pedidos: pedidosFormatados }); 
   } catch (err) {
     console.error("Erro ao buscar pedidos:", err);
     res.status(500).send("Erro ao buscar pedidos");
@@ -187,27 +175,20 @@ app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
 
 app.get("/lista-clientes", async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT * FROM clientes'
-    )
-
+    const [rows] = await pool.query('SELECT * FROM clientes')
     res.render("lista-clientes", { clientes: rows });
   } catch (err) {
     console.error("Erro ao buscar clientes:", err);
     res.status(500).send("Erro ao buscar clientes");
   }
-
 })
 
 app.post('/atualizar-status', async (req, res) => {
   try {
-    // desestruturamos as chaves que o front está enviando: id e novo_status
     const { id, novo_status } = req.body;
-
-    console.log('Recebido no servidor:', req.body); // debug completo do corpo
+    console.log('Recebido no servidor:', req.body); 
     console.log('Id:', id, 'Novo status:', novo_status);
 
-    // validação simples
     if (!id || !novo_status) {
       return res.status(400).json({ error: 'id ou novo_status ausente no corpo da requisição' });
     }
@@ -226,7 +207,6 @@ app.post('/atualizar-status', async (req, res) => {
 
 app.post("/editar-pedido", async (req, res) => {
   const { id, valor } = req.body;
-
   console.log("Recebido para edição:", id, valor);
 
   try {
@@ -234,7 +214,6 @@ app.post("/editar-pedido", async (req, res) => {
       "UPDATE pedidos SET valor = ? WHERE id = ?",
       [valor, id]
     );
-
     res.json({ ok: true, msg: "Valor atualizado!", linhas: result.affectedRows });
   } catch (erro) {
     console.error("Erro ao editar pedido:", erro);
@@ -262,13 +241,46 @@ app.get("/historico", async (req, res) => {
         data_pedido: `${dia}/${mes}/${ano} ${hora}:${min}`
       };
     });
-    res.render("historico", { pedidos: pedidosFormatados }); // envia 'pedidos' para o EJS
+    res.render("historico", { pedidos: pedidosFormatados }); 
   } catch (err) {
     console.error("Erro ao buscar pedidos:", err);
     res.status(500).send("Erro ao buscar pedidos");
   }
 });
 
+// ========================================================
+//              NOVAS ROTAS DO CARRINHO (ADICIONADAS)
+// ========================================================
+
+app.get('/carrinho', (req, res) => {
+    res.render('carrinho');
+});
+
+app.post('/finalizar-pedido', async (req, res) => {
+    try {
+        const { id_cliente, produtos, valor } = req.body;
+
+        if (!id_cliente) {
+            return res.status(401).json({ sucesso: false, erro: "Usuário não logado." });
+        }
+
+        // Insere o pedido na tabela 'pedidos' que você já usa no fila-pedidos
+        const query = `
+            INSERT INTO pedidos (id_cliente, produtos, valor, status, data_pedido)
+            VALUES (?, ?, ?, 'aguarda_confirmacao', NOW())
+        `;
+
+        await pool.query(query, [id_cliente, produtos, valor]);
+
+        res.json({ sucesso: true });
+
+    } catch (err) {
+        console.error("Erro ao finalizar pedido:", err);
+        res.status(500).json({ sucesso: false, erro: "Erro interno no servidor." });
+    }
+});
+
+// ========================================================
 
 // Inicia o servidor
 const PORT = 3000;

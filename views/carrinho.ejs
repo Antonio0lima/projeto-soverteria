@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Carrinho</title>
+    
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/carrinho.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+</head>
+<body>
+    
+    <% if (typeof usuario !== 'undefined' && usuario && usuario.tipo === "admin") { %>
+        <%- include("partials/navbar/navbar-adm") %>
+    <% } else { %>
+        <%- include("partials/navbar/navbar") %>
+    <% } %>
+
+    <div class="pagina-container">
+        <h1 class="titulo-carrinho"><i class="fas fa-shopping-cart"></i> Seu Pedido</h1>
+
+        <div class="carrinho-grid">
+            <div class="lista-itens card" id="lista-carrinho">
+                <p class="msg-vazia">Carregando itens...</p>
+            </div>
+
+            <div class="resumo-pedido card">
+                <h2>Resumo</h2>
+                <div class="linha-resumo">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">R$ 0,00</span>
+                </div>
+                <hr>
+                <div class="linha-resumo total">
+                    <span>Total:</span>
+                    <span id="total-final">R$ 0,00</span>
+                </div>
+
+                <% if (typeof usuario !== 'undefined' && usuario) { %>
+                    <button id="btn-finalizar" class="botao-finalizar">
+                        FINALIZAR PEDIDO
+                    </button>
+                <% } else { %>
+                    <a href="/" class="botao-login-necessario">
+                        FINALIZAR PEDIDO
+                    </a>
+                    <p style="text-align: center; font-size: 0.8em; margin-top: -10px; color: #666;">
+                        (Necessário login)
+                    </p>
+                <% } %>
+
+                <a href="/cardapio" class="botao-continuar">
+                    <i class="fas fa-plus-circle"></i> Adicionar mais itens
+                </a>
+                
+                <button id="btn-limpar" class="botao-limpar">Limpar Carrinho</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="id-cliente" value="<%= (typeof usuario !== 'undefined' && usuario) ? usuario.id : '' %>">
+
+    <script src="/scripts/carrinho.js"></script>
+</body>
+</html>

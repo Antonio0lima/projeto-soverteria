@@ -10,11 +10,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
 </head>
 <body>
-    <% if (usuario && usuario.tipo==="admin" ) { %>
+    <% if (typeof usuario !== 'undefined' && usuario && usuario.tipo === "admin" ) { %>
         <%- include("partials/navbar/navbar-adm") %>
-            <% } else { %>
-                <%- include("partials/navbar/navbar") %>
-                    <% } %>
+    <% } else { %>
+        <%- include("partials/navbar/navbar") %>
+    <% } %>
+    
      <div class="pagina-container">
 
         <main class="conteudo-principal">
@@ -143,7 +144,7 @@
                 }
             }
 
-            // --- FUNÇÃO: SELECIONAR PRODUTO (ATUALIZADA) ---
+            // --- FUNÇÃO: SELECIONAR PRODUTO ---
             function selecionarProduto(produto, elementoHtml) {
                 console.log("Visualizando:", produto.nome);
                 produtoEmVisualizacao = produto;
@@ -164,14 +165,12 @@
                 let htmlTamanhos = '';
                 if (produto.opcoes && produto.opcoes.length > 0) {
                     
-                    // LÓGICA DE AUTO-SELEÇÃO:
-                    // Se tiver só 1 opção, adiciona a classe 'tamanho-ativo' automaticamente
+                    // Auto-selecionar se tiver apenas 1 opção
                     const classeAutoSelect = produto.opcoes.length === 1 ? 'tamanho-ativo' : '';
 
                     produto.opcoes.forEach(opcao => {
                         let preco = parseFloat(opcao.preco).toFixed(2).replace('.', ',');
                         
-                        // Adicionamos ${classeAutoSelect} na class do botão
                         htmlTamanhos += `
                             <button class="btn-tamanho ${classeAutoSelect}" 
                                 onclick="toggleTamanho(this)"
@@ -218,6 +217,7 @@
                         
                         <div style="font-weight:bold; margin-bottom:5px; color:#555;">Escolha o tamanho:</div>
                         <div class="flex-tamanhos">${htmlTamanhos}</div>
+                        
                         ${htmlAdicionais}
                     </div>
                 `;
@@ -235,7 +235,7 @@
                 btn.classList.add('tamanho-ativo');
             }
 
-            // --- FUNÇÃO PRINCIPAL: ADICIONAR AO CARRINHO ---
+            // --- FUNÇÃO PRINCIPAL: ADICIONAR AO CARRINHO E REDIRECIONAR ---
             function adicionarAoCarrinho() {
                 if (!produtoEmVisualizacao) {
                     alert("Por favor, selecione um produto primeiro.");
@@ -287,18 +287,13 @@
                         quantidade: 1
                     };
 
-                    console.log("Adicionando ao carrinho:", novoItem);
-
+                    // Salva no LocalStorage
                     let carrinho = JSON.parse(localStorage.getItem('carrinho_sorveteria') || '[]');
                     carrinho.push(novoItem);
                     localStorage.setItem('carrinho_sorveteria', JSON.stringify(carrinho));
 
-                    alert("✅ Produto adicionado ao carrinho!");
-
-                    document.querySelectorAll('.btn-tamanho').forEach(b => b.classList.remove('tamanho-ativo'));
-                    document.querySelectorAll('input[name="adicional"]').forEach(chk => chk.checked = false);
-                    
-                    btnConfirmar.classList.remove('animar');
+                    // REDIRECIONA PARA O CARRINHO
+                    window.location.href = "/carrinho";
 
                 }, 150);
             }
