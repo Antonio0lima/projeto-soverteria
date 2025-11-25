@@ -4,7 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalFinalEl = document.getElementById("total-final");
     const btnFinalizar = document.getElementById("btn-finalizar");
     const btnLimpar = document.getElementById("btn-limpar");
-    // const obsInput removido pois não existe mais no HTML
+    
+    // Pega o ID do cliente do input hidden
     const idClienteElement = document.getElementById("id-cliente");
     const idCliente = idClienteElement ? idClienteElement.value : "";
 
@@ -51,22 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
         totalFinalEl.innerText = totalFormatado;
     }
 
+    // Função global para remover item individual
     window.removerItem = function(index) {
         carrinho.splice(index, 1);
         localStorage.setItem('carrinho_sorveteria', JSON.stringify(carrinho));
         renderizarCarrinho();
     };
 
+    // --- AQUI ESTÁ A MUDANÇA: LIMPAR TUDO SEM POPUP ---
     if(btnLimpar) {
         btnLimpar.addEventListener("click", () => {
-            if(confirm("Deseja esvaziar o carrinho?")) {
-                carrinho = [];
-                localStorage.removeItem('carrinho_sorveteria');
-                renderizarCarrinho();
-            }
+            // Removemos o "confirm" e limpamos direto
+            carrinho = [];
+            localStorage.removeItem('carrinho_sorveteria');
+            renderizarCarrinho();
         });
     }
 
+    // Finalizar Pedido
     if (btnFinalizar) {
         btnFinalizar.addEventListener("click", async () => {
             if (carrinho.length === 0) {
@@ -74,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // Monta a descrição do pedido para o banco
             let descricaoProdutos = carrinho.map(item => {
                 let desc = `${item.quantidade}x ${item.produto_nome} (${item.tamanho})`;
                 if(item.adicionais.length > 0) {
@@ -81,8 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 return desc;
             }).join(" | ");
-
-            // Parte que adicionava obs foi removida aqui
 
             const totalPedido = carrinho.reduce((acc, item) => acc + item.preco_total, 0);
 
