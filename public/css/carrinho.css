@@ -176,3 +176,17 @@ body {
 @media (max-width: 768px) {
     .carrinho-grid { grid-template-columns: 1fr; }
 }
+/* Adicione isso ao final do carrinho.css */
+
+.botao-finalizar:disabled {
+    background-color: #cccccc; /* Cinza */
+    color: #666666;
+    cursor: not-allowed; /* Mostra símbolo de proibido no mouse */
+    transform: none; /* Remove a animação de crescer */
+    box-shadow: none; /* Remove a sombra */
+}
+
+.botao-finalizar:disabled:hover {
+    background-color: #cccccc; /* Mantém cinza mesmo passando o mouse */
+    transform: none;
+}

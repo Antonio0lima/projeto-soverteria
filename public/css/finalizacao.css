@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
+
+:root {
+    --cor-fundo: #f0f0f0;
+    --cor-card: #EDE574; /* Amarelo do site */
+    --cor-destaque: #ff914d; /* Laranja */
+    --cor-botao: #ff5e6a; /* Vermelho/Rosa */
+    --cor-texto: #333;
+}
+
+body {
+    font-family: 'Inconsolata', monospace;
+    background-color: var(--cor-fundo);
+    margin: 0;
+    padding: 0;
+}
+
+.pagina-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.titulo-pagina {
+    text-align: center;
+    color: var(--cor-destaque);
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 0px #fff;
+}
+
+/* LAYOUT GRID DE DUAS COLUNAS */
+.grid-finalizacao {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Metade para cada */
+    gap: 30px;
+    min-height: 500px;
+}
+
+/* CARDS PADRÃO */
+.card-pagamento, .card-resumo {
+    background-color: var(--cor-card);
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 5px 8px 12px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- LADO ESQUERDO: PAGAMENTO --- */
+.card-pagamento h2 {
+    color: var(--cor-texto);
+    margin-top: 0;
+    text-align: center;
+}
+
+.qrcode-area {
+    background-color: #fff;
+    border-radius: 20px;
+    flex-grow: 1; /* Ocupa o espaço disponível */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    min-height: 250px;
+    border: 3px dashed #ccc;
+    color: #aaa;
+}
+
+.qrcode-placeholder {
+    font-size: 5em;
+    margin-bottom: 10px;
+}
+
+/* Input de Arquivo Customizado */
+.input-file-container {
+    width: 100%;
+}
+
+.input-file-trigger {
+    background-color: var(--cor-destaque);
+    color: white;
+    padding: 15px;
+    border-radius: 50px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+}
+
+.input-file-trigger:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+}
+
+.input-file-trigger i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+/* Oculta o input real feio do navegador */
+.input-file-hidden {
+    display: none;
+}
+
+.nome-arquivo {
+    text-align: center;
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 5px;
+    min-height: 20px;
+}
+
+/* --- LADO DIREITO: RESUMO --- */
+.lista-resumo {
+    background-color: rgba(255,255,255,0.5);
+    border-radius: 15px;
+    padding: 15px;
+    flex-grow: 1;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.item-resumo {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 10px 0;
+    font-size: 0.95em;
+}
+
+.total-final {
+    font-size: 1.8em;
+    font-weight: bold;
+    text-align: right;
+    color: var(--cor-botao);
+    margin-bottom: 20px;
+}
+
+.btn-concluir {
+    background-color: var(--cor-botao);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 50px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.btn-concluir:hover {
+    transform: scale(1.03);
+    background-color: #ff404e;
+}
+
+.aviso-pagamento {
+    font-size: 0.8em;
+    text-align: center;
+    margin-top: 10px;
+    color: #666;
+}
+
+/* Responsividade */
+@media (max-width: 800px) {
+    .grid-finalizacao {
+        grid-template-columns: 1fr;
+    }
+    .qrcode-area {
+        min-height: 200px;
+    }
+}

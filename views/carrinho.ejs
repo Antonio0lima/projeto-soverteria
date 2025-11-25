@@ -22,10 +22,12 @@
         <h1 class="titulo-carrinho"><i class="fas fa-shopping-cart"></i> Seu Pedido</h1>
 
         <div class="carrinho-grid">
+            <!-- Lista de itens (preenchida via JS) -->
             <div class="lista-itens card" id="lista-carrinho">
                 <p class="msg-vazia">Carregando itens...</p>
             </div>
 
+            <!-- Resumo e Botões -->
             <div class="resumo-pedido card">
                 <h2>Resumo</h2>
                 <div class="linha-resumo">
@@ -38,18 +40,11 @@
                     <span id="total-final">R$ 0,00</span>
                 </div>
 
-                <% if (typeof usuario !== 'undefined' && usuario) { %>
-                    <button id="btn-finalizar" class="botao-finalizar">
-                        FINALIZAR PEDIDO
-                    </button>
-                <% } else { %>
-                    <a href="/" class="botao-login-necessario">
-                        FINALIZAR PEDIDO
-                    </a>
-                    <p style="text-align: center; font-size: 0.8em; margin-top: -10px; color: #666;">
-                        (Necessário login)
-                    </p>
-                <% } %>
+                <!-- ALTERAÇÃO AQUI: Botão sempre visível, sem verificação de login -->
+                <button id="btn-finalizar" class="botao-finalizar">
+                    FINALIZAR PEDIDO
+                </button>
+                <!-- Fim da alteração -->
 
                 <a href="/cardapio" class="botao-continuar">
                     <i class="fas fa-plus-circle"></i> Adicionar mais itens
@@ -60,6 +55,7 @@
         </div>
     </div>
 
+    <!-- ID do cliente (pode estar vazio se não logado, o JS trata isso depois) -->
     <input type="hidden" id="id-cliente" value="<%= (typeof usuario !== 'undefined' && usuario) ? usuario.id : '' %>">
 
     <script src="/scripts/carrinho.js"></script>
