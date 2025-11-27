@@ -135,17 +135,47 @@ app.post('/finalizar-pedido', async (req, res) => {
     try {
         let { id_cliente, produtos, valor } = req.body;
 
+        console.log("=== DADOS RECEBIDOS ===");
+        console.log("id_cliente:", id_cliente);
+        console.log("produtos (tipo):", typeof produtos);
+        console.log("produtos (valor):", produtos);
+
         if (!id_cliente) {
-             // Fallback para teste se não tiver login, mas o ideal é bloquear antes
-             console.log("Aviso: Pedido sem cliente ID.");
-             return res.status(400).json({ sucesso: false, erro: "Usuário não logado" });
+            return res.status(400).json({ sucesso: false, erro: "Usuário não logado" });
         }
+
+        let produtosParaSalvar;
+
+        // CASO 1: Já é array (formato correto)
+        if (Array.isArray(produtos)) {
+            produtosParaSalvar = JSON.stringify(produtos);
+        }
+        // CASO 2: É string de texto (formato antigo)
+        else if (typeof produtos === 'string') {
+            // Aceita tanto string descritiva quanto JSON
+            try {
+                // Tenta parsear como JSON primeiro
+                const parsed = JSON.parse(produtos);
+                produtosParaSalvar = JSON.stringify(parsed);
+            } catch (e) {
+                // Se não for JSON, aceita como string descritiva
+                produtosParaSalvar = JSON.stringify([{ descricao: produtos }]);
+            }
+        }
+        // CASO 3: Outro formato
+        else {
+            produtosParaSalvar = JSON.stringify([]);
+        }
+
+        console.log("Produtos para salvar:", produtosParaSalvar);
 
         const query = `
             INSERT INTO pedidos (id_cliente, produtos, valor, status, data_pedido)
             VALUES (?, ?, ?, 'aguarda_confirmacao', NOW())
         `;
-        await pool.query(query, [id_cliente, produtos, valor]);
+        
+        const [result] = await pool.query(query, [id_cliente, produtosParaSalvar, valor]);
+        console.log("Pedido salvo com ID:", result.insertId);
         
         res.json({ sucesso: true });
 
@@ -160,15 +190,57 @@ app.post('/finalizar-pedido', async (req, res) => {
 app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
   try {
     const [rows] = await pool.query(`
-        SELECT p.*, c.nome as nome_cliente 
-        FROM pedidos p 
-        JOIN clientes c ON p.id_cliente = c.id
-        ORDER BY p.data_pedido DESC
+      SELECT p.*, c.nome AS nome_cliente
+      FROM pedidos p
+      JOIN clientes c ON p.id_cliente = c.id
+      ORDER BY p.data_pedido DESC
     `);
-    res.render("fila-pedidos", { pedidos: rows }); 
-  } catch (err) { res.send("Erro ao carregar fila"); }
-});
 
+    console.log("Total de pedidos:", rows.length);
+
+    const pedidos = rows.map(p => {
+      const data = new Date(p.data_pedido);
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = data.getFullYear();
+      const hora = String(data.getHours()).padStart(2, '0');
+      const min = String(data.getMinutes()).padStart(2, '0');
+
+      let produtosParsed = [];
+      
+      if (p.produtos) {
+        try {
+          if (typeof p.produtos === 'string') {
+            produtosParsed = JSON.parse(p.produtos);
+          } else {
+            produtosParsed = p.produtos;
+          }
+        } catch (e) {
+          console.error(`Erro ao parsear pedido ${p.id}:`, e.message);
+          // Se não conseguir parsear, cria estrutura básica
+          produtosParsed = [{ descricao: p.produtos }];
+        }
+      }
+
+      // Garante que é array
+      if (!Array.isArray(produtosParsed)) {
+        produtosParsed = [produtosParsed];
+      }
+
+      return {
+        ...p,
+        data_formatada: `${dia}/${mes}/${ano} ${hora}:${min}`,
+        produtos: produtosParsed
+      };
+    });
+
+    res.render("fila-pedidos", { pedidos });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao carregar fila");
+  }
+});
 app.get("/lista-clientes", async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM clientes');
     res.render("lista-clientes", { clientes: rows });

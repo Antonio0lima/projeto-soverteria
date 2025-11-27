@@ -11,15 +11,16 @@
 </head>
 
 <body> 
-  <% if (usuario && usuario.tipo==="admin" ) { %>
-        <%- include("partials/navbar/navbar-adm") %>
-            <% } else { %>
-                <%- include("partials/navbar/navbar") %>
-                    <% } %>
-  <!-- Overlay do popup -->
-<div id="overlay" class="overlay"></div>
 
-<!-- Popup de edição -->
+  
+  <% if (usuario && usuario.tipo==="admin") { %>
+      <%- include("partials/navbar/navbar-adm") %>
+  <% } else { %>
+      <%- include("partials/navbar/navbar") %>
+  <% } %>
+
+<!-- Popup -->
+<div id="overlay" class="overlay"></div>
 <div id="popupEditar" class="popup">
     <h2>Editar Pedido</h2>
 
@@ -32,114 +33,155 @@
     </div>
 </div>
 
-  <div class="painel-pedidos">
+<div class="painel-pedidos">
 
-    <!-- Coluna 1: Aguarda confirmação -->
+    <!-- ==== FUNÇÃO DE RENDERIZAÇÃO DO CARTÃO ==== -->
+    <% const renderPedido = (pedido) => { %>
+        <div class="cartao" draggable="true" data-id="<%= pedido.id %>">
+
+            <div class="linha">
+                <div class="campo"><%= pedido.nome_cliente %></div>
+                <div class="campo pequeno"><%= pedido.data_formatada %></div>
+            </div>
+
+            <div class="linha">
+                <div class="campo grande lista-produtos">
+                    <% if (pedido.produtos && pedido.produtos.length > 0) { %>
+                        <% 
+                        // Função para processar e dividir os produtos
+                        const processarProdutos = (produtos) => {
+                            let itens = [];
+                            
+                            if (Array.isArray(produtos)) {
+                                produtos.forEach(item => {
+                                    if (typeof item === 'string') {
+                                        // Se o item do array é string, divide por "|"
+                                        const divididos = item.split('|')
+                                            .map(i => i.trim())
+                                            .filter(i => i.length > 0)
+                                            .map(i => ({ descricao: i }));
+                                        itens = itens.concat(divididos);
+                                    } else if (item.descricao && item.descricao.includes('|')) {
+                                        // Se a descrição tem "|", divide
+                                        const divididos = item.descricao.split('|')
+                                            .map(i => i.trim())
+                                            .filter(i => i.length > 0)
+                                            .map(i => ({ descricao: i }));
+                                        itens = itens.concat(divididos);
+                                    } else {
+                                        // Usa o item como está
+                                        itens.push(item);
+                                    }
+                                });
+                            } else if (typeof produtos === 'string') {
+                                // Se é string única, divide por "|"
+                                itens = produtos.split('|')
+                                    .map(item => item.trim())
+                                    .filter(item => item.length > 0)
+                                    .map(item => ({ descricao: item }));
+                            }
+                            return itens;
+                        };
+                        
+                        const itensProcessados = processarProdutos(pedido.produtos);
+                        %>
+                        
+                        <% itensProcessados.forEach((item, index) => { %>
+                            <div class="item-produto">
+                                • 
+                                <% if (item.descricao) { %>
+                                    <%= item.descricao %>
+                                <% } else if (item.quantidade && item.produto_nome) { %>
+                                    <%= item.quantidade %>x <%= item.produto_nome %>
+                                    <% if (item.tamanho) { %> (<%= item.tamanho %>) <% } %>
+                                    <% if (item.adicionais && item.adicionais.length > 0) { %>
+                                        c/ <%= item.adicionais.map(a => a.nome || a).join("+") %>
+                                    <% } %>
+                                <% } else if (item.nome) { %>
+                                    <%= item.quantidade || 1 %>x <%= item.nome %>
+                                    <% if (item.tamanho) { %> (<%= item.tamanho %>) <% } %>
+                                    <% if (item.adicionais && item.adicionais.length > 0) { %>
+                                        c/ <%= item.adicionais.join("+") %>
+                                    <% } %>
+                                <% } else { %>
+                                    Item <%= index + 1 %>
+                                <% } %>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="item-produto">Nenhum produto listado</div>
+                    <% } %>
+                </div>
+
+                <div class="coluna-direita">
+                    <div class="campo pequeno">R$ <%= pedido.valor %></div>
+                    <div class="bolinha"><i class="fa-solid fa-pen"></i></div>
+                </div>
+            </div>
+
+        </div>
+    <% } %>
+
+    <!-- ==== COLUNA 1 ==== -->
     <div class="grupo-coluna">
       <h2 class="titulo-coluna">Aguarda confirmação</h2>
       <div class="coluna" data-status="aguarda_confirmacao">
-        <% pedidos.filter(p => p.status === 'aguarda_confirmacao').forEach(pedido => { %>
-          <div class="cartao" draggable="true" data-id="<%= pedido.id %>">
-            <div class="linha">
-              <div class="campo"><%= pedido.nome_cliente %></div>
-              <div class="campo pequeno"><%= pedido.data_pedido %></div>
-            </div>
-            <div class="linha">
-              <div class="campo grande"><%= pedido.produtos %></div>
-              <div class="coluna-direita">
-                <div class="campo pequeno">R$ <%= pedido.valor %></div>
-                <div class="bolinha"><i class="fa-solid fa-pen"></i></div>
-              </div>
-            </div>
-          </div>
-        <% }) %>
+        <% const lista1 = pedidos.filter(p => p.status === 'aguarda_confirmacao'); %>
 
-        <% if (pedidos.filter(p => p.status === 'aguarda_confirmacao').length === 0) { %>
-          <p class="vazio">Nenhum pedido aguardando confirmação.</p>
+        <% lista1.forEach(pedido => { renderPedido(pedido); }) %>
+
+        <% if (lista1.length === 0) { %>
+            <p class="vazio">Nenhum pedido aguardando confirmação.</p>
         <% } %>
       </div>
     </div>
 
-    <!-- Coluna 2: Confirmado -->
+    <!-- ==== COLUNA 2 ==== -->
     <div class="grupo-coluna">
       <h2 class="titulo-coluna">Confirmado</h2>
       <div class="coluna" data-status="confirmado">
-        <% pedidos.filter(p => p.status === 'confirmado').forEach(pedido => { %>
-          <div class="cartao" draggable="true" data-id="<%= pedido.id %>">
-            <div class="linha">
-              <div class="campo"><%= pedido.nome_cliente %></div>
-              <div class="campo pequeno"><%= pedido.data_pedido %></div>
-            </div>
-            <div class="linha">
-              <div class="campo grande"><%= pedido.produtos %></div>
-              <div class="coluna-direita">
-                <div class="campo pequeno">R$ <%= pedido.valor %></div>
-                <div class="bolinha"><i class="fa-solid fa-pen"></i></div>
-              </div>
-            </div>
-          </div>
-        <% }) %>
+        <% const lista2 = pedidos.filter(p => p.status === 'confirmado'); %>
 
-        <% if (pedidos.filter(p => p.status === 'confirmado').length === 0) { %>
-          <p class="vazio">Nenhum pedido confirmado.</p>
+        <% lista2.forEach(pedido => { renderPedido(pedido); }) %>
+
+        <% if (lista2.length === 0) { %>
+            <p class="vazio">Nenhum pedido confirmado.</p>
         <% } %>
       </div>
     </div>
 
-    <!-- Coluna 3: Aguarda entrega -->
+    <!-- ==== COLUNA 3 ==== -->
     <div class="grupo-coluna">
       <h2 class="titulo-coluna">Aguarda entrega</h2>
       <div class="coluna" data-status="aguarda_entrega">
-        <% pedidos.filter(p => p.status === 'aguarda_entrega').forEach(pedido => { %>
-          <div class="cartao" draggable="true" data-id="<%= pedido.id %>">
-            <div class="linha">
-              <div class="campo"><%= pedido.nome_cliente %></div>
-              <div class="campo pequeno"><%= pedido.data_pedido %></div>
-            </div>
-            <div class="linha">
-              <div class="campo grande"><%= pedido.produtos %></div>
-              <div class="coluna-direita">
-                <div class="campo pequeno">R$ <%= pedido.valor %></div>
-                <div class="bolinha"><i class="fa-solid fa-pen"></i></div>
-              </div>
-            </div>
-          </div>
-        <% }) %>
 
-        <% if (pedidos.filter(p => p.status === 'aguarda_entrega').length === 0) { %>
-          <p class="vazio">Nenhum pedido aguardando entrega.</p>
+        <% const lista3 = pedidos.filter(p => p.status === 'aguarda_entrega'); %>
+
+        <% lista3.forEach(pedido => { renderPedido(pedido); }) %>
+
+        <% if (lista3.length === 0) { %>
+            <p class="vazio">Nenhum pedido aguardando entrega.</p>
         <% } %>
       </div>
     </div>
 
-    <!-- Coluna 4: Concluído -->
+    <!-- ==== COLUNA 4 ==== -->
     <div class="grupo-coluna">
       <h2 class="titulo-coluna">Concluído</h2>
       <div class="coluna" data-status="concluido">
-        <% pedidos.filter(p => p.status === 'concluido').forEach(pedido => { %>
-          <div class="cartao" draggable="true" data-id="<%= pedido.id %>">
-            <div class="linha">
-              <div class="campo"><%= pedido.nome_cliente %></div>
-              <div class="campo pequeno"><%= pedido.data_pedido %></div>
-            </div>
-            <div class="linha">
-              <div class="campo grande"><%= pedido.produtos %></div>
-              <div class="coluna-direita">
-                <div class="campo pequeno">R$ <%= pedido.valor %></div>
-                <div class="bolinha"><i class="fa-solid fa-pen"></i></div>
-              </div>
-            </div>
-          </div>
-        <% }) %>
 
-        <% if (pedidos.filter(p => p.status === 'concluido').length === 0) { %>
-          <p class="vazio">Nenhum pedido concluído.</p>
+        <% const lista4 = pedidos.filter(p => p.status === 'concluido'); %>
+
+        <% lista4.forEach(pedido => { renderPedido(pedido); }) %>
+
+        <% if (lista4.length === 0) { %>
+            <p class="vazio">Nenhum pedido concluído.</p>
         <% } %>
       </div>
     </div>
 
-  </div>
+</div>
 
-  <script src="/scripts/fila-pedidos.js"></script>
+<script src="/scripts/fila-pedidos.js"></script>
 </body>
 </html>

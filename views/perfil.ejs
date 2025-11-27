@@ -1,15 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tela de perfil</title>
+    <title>Meu Perfil</title>
+    
+    <!-- Fonte e CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/perfil.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <!-- Ícones (FontAwesome) para o lápis -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-   <% if (usuario && usuario.tipo==="admin" ) { %>
+    <% if (usuario && usuario.tipo==="admin" ) { %>
         <%- include("partials/navbar/navbar-adm") %>
             <% } else { %>
                 <%- include("partials/navbar/navbar") %>
                     <% } %>
+    <!-- Conteúdo Principal Centralizado -->
+    <main class="container-principal">
+        
+        <div class="card-perfil">
+            <!-- Grid de Campos -->
+            <div class="campos-grid">
+                
+                <!-- Linha 1: Nome Completo -->
+                <div class="campo full-width">
+                    <label>nome do cliente</label>
+                    <div class="input-box">Ana Souza da Silva</div>
+                </div>
+
+                <!-- Linha 2: Nascimento e Email -->
+                <div class="campo pequeno">
+                    <label>data de nascimento</label>
+                    <div class="input-box">12/03/1995</div>
+                </div>
+                <div class="campo medio">
+                    <label>e-mail cadastrado</label>
+                    <div class="input-box">ana.souza@example.com</div>
+                </div>
+
+                <!-- Linha 3: Cadastro, Pedidos, Pix -->
+                <div class="campo pequeno">
+                    <label>data de cadastro</label>
+                    <div class="input-box">08/11/2025</div>
+                </div>
+                <div class="campo pequeno">
+                    <label>total de pedidos</label>
+                    <div class="input-box">15</div>
+                </div>
+                <div class="campo grande">
+                    <label>chave pix para reembolso</label>
+                    <div class="input-box">123.456.789-00</div>
+                </div>
+
+            </div>
+
+            <!-- Botão de Editar Flutuante -->
+            <button class="btn-editar">
+                <i class="fa-solid fa-pencil"></i>
+            </button>
+        </div>
+
+    </main>
+
 </body>
 </html>

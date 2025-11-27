@@ -1,40 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
     
     // --- 1. ELEMENTOS DO HTML ---
-    const listaResumo = document.querySelector('.lista-resumo'); // Onde os itens entram
-    const totalEl = document.querySelector('.total-final span'); // Onde fica o preço total
-    const btnConcluir = document.querySelector('.btn-concluir'); // Botão vermelho
-    const idClienteInput = document.getElementById('id-cliente-final'); // ID do usuário escondido
+    const listaResumo = document.querySelector('.lista-resumo');
+    const totalEl = document.querySelector('.total-final span');
+    const btnConcluir = document.querySelector('.btn-concluir');
+    const idClienteInput = document.getElementById('id-cliente-final');
 
-    // --- 2. CARREGAR DADOS DA MEMÓRIA DO NAVEGADOR (CARRINHO) ---
-    // Não consultamos o banco aqui, pois o pedido ainda é "provisório"
+    // --- 2. CARREGAR CARRINHO ---
     let carrinho = JSON.parse(localStorage.getItem('carrinho_sorveteria') || '[]');
 
-    // Se estiver vazio, volta pro cardápio
     if (carrinho.length === 0) {
         alert("Seu carrinho está vazio!");
         window.location.href = "/cardapio";
         return;
     }
 
-    // --- 3. DESENHAR O RESUMO NA TELA ---
-    listaResumo.innerHTML = ""; // Limpa o texto "Carregando itens..."
+    // --- 3. DESENHAR RESUMO ---
+    listaResumo.innerHTML = "";
     let total = 0;
 
     carrinho.forEach(item => {
         total += item.preco_total;
         
-        // Monta texto de adicionais se houver (ex: + Nutella)
         let textoAdd = "";
         if(item.adicionais && item.adicionais.length > 0) {
             const nomes = item.adicionais.map(a => a.nome).join(', ');
             textoAdd = `<div style="font-size:0.8em; color:#d35400; margin-left:10px;">+ ${nomes}</div>`;
         }
 
-        // Cria o elemento visual de cada item
         const div = document.createElement('div');
         div.className = 'item-resumo';
-        // Estilização simples via JS para garantir que fique bonito
         div.style.display = "flex";
         div.style.justifyContent = "space-between";
         div.style.marginBottom = "10px";
@@ -51,64 +46,62 @@ document.addEventListener("DOMContentLoaded", () => {
         listaResumo.appendChild(div);
     });
 
-    // Atualiza o preço total lá embaixo
     totalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
 
-
-    // --- 4. AQUI SIM: A LIGAÇÃO COM O BANCO DE DADOS (AO CLICAR) ---
+    // --- 4. FINALIZAR PEDIDO ---
     btnConcluir.addEventListener('click', async () => {
-        const idCliente = idClienteInput.value; // Pega o ID do input hidden
+        const idCliente = idClienteInput.value;
         
         if (!idCliente) {
             alert("Você precisa estar logado para concluir!");
-            window.location.href = "/"; // Manda pro login se não tiver ID
+            window.location.href = "/";
             return;
         }
 
         btnConcluir.innerText = "Processando...";
         btnConcluir.disabled = true;
 
-        // Prepara os dados do carrinho para salvar no Banco de Dados
-        // Transformamos o array de objetos em uma String legível para o banco
-        let descricaoProdutos = carrinho.map(item => {
-            let desc = `${item.quantidade}x ${item.produto_nome} (${item.tamanho})`;
-            if(item.adicionais.length > 0) {
-                desc += ` c/ ${item.adicionais.map(a => a.nome).join('+')}`;
-            }
-            return desc;
-        }).join(" | ");
-
+        // ✅ PREPARA OS DADOS DE FORMA SEGURA
         const dadosParaBanco = {
-            id_cliente: idCliente,
-            produtos: descricaoProdutos,
-            valor: total
+            id_cliente: parseInt(idCliente), // Garante que é número
+            produtos: carrinho, // Array completo
+            valor: parseFloat(total.toFixed(2)) // Garante que é número
         };
 
+        console.log("Enviando para servidor:", dadosParaBanco);
+
         try {
-            // Faz a requisição POST para o seu server.js
             const resp = await fetch('/finalizar-pedido', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify(dadosParaBanco)
             });
+
+            // Verifica se a resposta é JSON
+            const contentType = resp.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Resposta do servidor não é JSON");
+            }
 
             const resultado = await resp.json();
 
             if (resultado.sucesso) {
                 alert("✅ Pedido realizado com sucesso!");
-                localStorage.removeItem('carrinho_sorveteria'); // Limpa o carrinho
-                window.location.href = "/perfil"; // Manda para o histórico de pedidos
+                localStorage.removeItem('carrinho_sorveteria');
+                window.location.href = "/perfil";
             } else {
-                alert("Erro ao salvar no banco: " + (resultado.erro || "Desconhecido"));
+                alert("Erro: " + (resultado.erro || "Desconhecido"));
                 btnConcluir.innerText = "CONCLUIR PEDIDO";
                 btnConcluir.disabled = false;
             }
         } catch (err) {
-            console.error(err);
-            alert("Erro de conexão com o servidor.");
+            console.error("Erro detalhado:", err);
+            alert("Erro de conexão: " + err.message);
             btnConcluir.innerText = "CONCLUIR PEDIDO";
             btnConcluir.disabled = false;
         }
     });
-
 });

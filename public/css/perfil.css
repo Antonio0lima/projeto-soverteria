@@ -1,0 +1,107 @@
+/* Reset e Fonte */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inconsolata', monospace;
+    background-color: #ffffff;
+    color: #333;
+    min-height: 100vh; /* Garante altura total */
+    
+    /* MUDANÇA IMPORTANTE AQUI: */
+    display: flex;
+    flex-direction: column; /* Empilha: Navbar em cima, Conteúdo em baixo */
+}
+
+/* --- CONTEÚDO PRINCIPAL --- */
+.container-principal {
+    width: 100%;
+    flex: 1; /* Faz este container ocupar todo o espaço que sobra abaixo da navbar */
+    
+    /* Centraliza o cartão DENTRO deste espaço */
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    
+    padding: 20px;
+}
+
+.card-perfil {
+    background-color: #F9D423; 
+    width: 100%;
+    max-width: 800px;
+    border-radius: 20px;
+    padding: 40px 30px; 
+    position: relative; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+}
+
+/* Grid layout para os campos */
+.campos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tamanhos dos campos */
+.full-width { width: 100%; }
+.pequeno { width: calc(30% - 10px); }
+.medio { width: calc(70% - 5px); }
+.grande { width: calc(40% - 5px); } 
+
+/* Responsividade */
+@media (max-width: 650px) {
+    .pequeno, .medio, .grande { width: 100%; }
+}
+
+.campo label {
+    font-size: 14px;
+    margin-bottom: 8px;
+    margin-left: 15px;
+    font-weight: 700;
+    color: #000;
+}
+
+.input-box {
+    background-color: #ffffff;
+    border-radius: 50px;
+    padding: 12px 25px;
+    font-size: 16px;
+    color: #333;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+}
+
+/* --- BOTÃO EDITAR --- */
+.btn-editar {
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    width: 70px;
+    height: 70px;
+    background-color: #FC913A;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.btn-editar:hover {
+    transform: scale(1.1);
+}
