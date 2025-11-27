@@ -1,0 +1,97 @@
+*{
+	padding: 0px;
+	margin: 0px;
+}
+
+body {
+  font-family: 'Inconsolata', monospace;
+  background-color: #f7f7f7;
+
+}
+.botao_add{
+  display: flex;
+  width: 70px;
+  height: 70px;
+  background-color: #ff9933;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  font-size: 55px; 
+  color: white;
+  box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.3);
+}
+
+.botao_add:hover{
+  background-color: white;
+  color: black;
+}
+
+.menu{
+  margin-top: 80px;
+  margin-left: 90px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.linhaPesquisa{
+  padding-right: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 70px;
+
+
+}
+
+.barra-pesquisa{
+  width: 400px;               
+  height: 40px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 16px;
+  background-color: #EDE574;
+  border-radius: 25px;
+  border: none;
+  box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.3);
+}
+
+.lista-clientes{
+  width: 2000px;
+  max-width: 95vw;
+  min-height: 700px;
+  background-color: #E1F5C4;
+  margin: 40px auto;
+  border-radius: 40px;
+  padding-top: 40px;
+  box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.3);
+  
+}
+
+.linha-cliente{
+  background-color: #EAF966;
+  width: 95vw;
+  max-width: 95vw;
+  height: 60px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding-left: 60px;
+  border-radius: 40px;
+  box-sizing: border-box;
+  font-size: 40px;
+  box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.3);
+  justify-content: space-between;
+  margin-bottom: 20px
+}
+
+.botao-editar{
+  background-color: #ff9933;
+  height: 100%;
+  width: 100px;
+  border-radius: 0px 40px 40px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
