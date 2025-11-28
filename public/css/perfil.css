@@ -1,4 +1,14 @@
-/* Reset e Fonte */
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
+
+:root {
+    --cor-fundo: #f0f0f0;
+    --cor-card: #EDE574;
+    --cor-destaque: #ff914d;
+    --cor-botao: #ff5e6a;
+    --cor-texto: #333;
+}
+
+/* Reset Básico */
 * {
     margin: 0;
     padding: 0;
@@ -7,66 +17,69 @@
 
 body {
     font-family: 'Inconsolata', monospace;
-    background-color: #ffffff;
-    color: #333;
-    min-height: 100vh; /* Garante altura total */
-    
-    /* MUDANÇA IMPORTANTE AQUI: */
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Empilha: Navbar em cima, Conteúdo em baixo */
-}
-
-body{
+    flex-direction: column;
+    /* Background Fixo */
     background-image: url('/img/sorveteBackground2.jpeg');
-    background-size: cover;         /* Estica a imagem para cobrir toda a área */
-    background-repeat: no-repeat;   /* Evita repetição */
-    background-position: center;    /* Centraliza a imagem */
-    
-
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-body::before{
+
+body::before {
     content: "";
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/img/sorveteBackground2.jpeg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: blur(8px);
-  
-  z-index: -1;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/img/sorveteBackground2.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(8px);
+    z-index: -1;
 }
 
-/* --- CONTEÚDO PRINCIPAL --- */
+/* --- ESTRUTURA PRINCIPAL --- */
 .container-principal {
     width: 100%;
-    flex: 1; /* Faz este container ocupar todo o espaço que sobra abaixo da navbar */
-    
-    /* Centraliza o cartão DENTRO deste espaço */
+    flex: 1;
     display: flex;
-    align-items: center; 
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    
     padding: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.titulo-pagina {
+    text-align: center;
+    color: var(--cor-destaque);
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    width: 100%;
 }
 
 .card-perfil {
-    background-color: #F9D423; 
+    background-color: var(--cor-card);
     width: 100%;
     max-width: 800px;
-    border-radius: 20px;
-    padding: 40px 30px; 
-    position: relative; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+    border-radius: 30px;
+    padding: 40px 30px;
+    box-shadow: 5px 8px 12px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
 }
 
-/* Grid layout para os campos */
+/* --- FORMULÁRIO E CAMPOS --- */
 .campos-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 20px;
 }
 
 .campo {
@@ -74,215 +87,98 @@ body::before{
     flex-direction: column;
 }
 
-/* Tamanhos dos campos */
+/* Larguras Responsivas */
 .full-width { width: 100%; }
-.pequeno { width: calc(30% - 10px); }
-.medio { width: calc(70% - 5px); }
-.grande { width: calc(40% - 5px); } 
+.pequeno { width: calc(30% - 14px); }
+.medio { width: calc(70% - 6px); }
+.grande { width: calc(40% - 10px); }
 
-/* Responsividade */
 @media (max-width: 650px) {
     .pequeno, .medio, .grande { width: 100%; }
 }
 
 .campo label {
-    font-size: 14px;
+    font-size: 1.1em;
     margin-bottom: 8px;
-    margin-left: 15px;
+    margin-left: 10px;
     font-weight: 700;
-    color: #000;
 }
 
 .input-box {
     background-color: #ffffff;
     border-radius: 50px;
     padding: 12px 25px;
-    font-size: 16px;
-    color: #333;
-    min-height: 50px;
+    font-size: 1.1em;
+    color: #555;
+    min-height: 55px;
     display: flex;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* --- BOTÃO EDITAR --- */
-.btn-editar {
-    position: absolute;
-    bottom: -20px;
-    right: 20px;
-    width: 70px;
-    height: 70px;
-    background-color: #FC913A;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    color: #000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
-}
-
-.btn-editar:hover {
-    transform: scale(1.1);
-}
-
-    /* Estilos para os modos de visualização e edição */
-        .view-mode, .edit-mode {
-            width: 100%;
-        }
-        
-        .input-edit {
-            background-color: #ffffff;
-            border: 2px solid #FC913A;
-            border-radius: 50px;
-            padding: 12px 25px;
-            font-size: 16px;
-            color: #333;
-            min-height: 50px;
-            font-family: 'Inconsolata', monospace;
-        }
-        
-        .input-edit:focus {
-            outline: none;
-            border-color: #FF6B6B;
-        }
-        
-        .botoes-acao {
-            position: absolute;
-            bottom: -20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn-salvar, .btn-cancelar {
-            width: 70px;
-            height: 70px;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: #000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-        
-        .btn-salvar {
-            background-color: #4CAF50;
-        }
-        
-        .btn-cancelar {
-            background-color: #F44336;
-        }
-        
-        .btn-salvar:hover, .btn-cancelar:hover {
-            transform: scale(1.1);
-        }
-        
-        /* Modal styles */
-        .modal {
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-        
-        .close {
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        #btn-fechar-modal {
-            background: #FC913A;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-family: 'Inconsolata', monospace;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        /* Estilos para os modos de visualização e edição */
-.view-mode, .edit-mode {
-    width: 100%;
-}
+/* Modo de Edição */
+.view-mode, .edit-mode { width: 100%; }
 
 .input-edit {
     background-color: #ffffff;
-    border: 2px solid #FC913A;
+    border: 2px solid var(--cor-destaque);
     border-radius: 50px;
     padding: 12px 25px;
-    font-size: 16px;
+    font-size: 1.1em;
     color: #333;
-    min-height: 50px;
+    min-height: 55px;
     font-family: 'Inconsolata', monospace;
+    width: 100%;
 }
 
 .input-edit:focus {
     outline: none;
-    border-color: #FF6B6B;
+    border-color: var(--cor-botao);
 }
 
+/* --- BOTÕES DE AÇÃO --- */
 .botoes-acao {
-    position: absolute;
-    bottom: -20px;
-    right: 20px;
+    width: 100%;
+    margin-top: 40px;
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    /* Inverte a ordem para Logout ficar na Esquerda e Editar na Direita */
+    flex-direction: row-reverse;
 }
 
-.btn-salvar, .btn-cancelar {
-    width: 70px;
-    height: 70px;
+.botoes-edicao {
+    display: flex;
+    gap: 15px;
+}
+
+/* Estilo Base dos Botões Redondos */
+.btn-editar, .btn-logout, .btn-salvar, .btn-cancelar {
+    width: 60px;
+    height: 60px;
     border: none;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
-    color: #000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-size: 24px;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     transition: transform 0.2s;
 }
 
-.btn-salvar {
-    background-color: #4CAF50;
-}
+.btn-editar { background-color: var(--cor-destaque); }
+.btn-logout { background-color: var(--cor-botao); }
+.btn-salvar { background-color: #4CAF50; }
+.btn-cancelar { background-color: #F44336; }
 
-.btn-cancelar {
-    background-color: #F44336;
-}
-
+.btn-editar:hover, .btn-logout:hover, 
 .btn-salvar:hover, .btn-cancelar:hover {
     transform: scale(1.1);
 }
 
-/* Modal styles */
+/* --- MODAL --- */
 .modal {
     position: fixed;
     z-index: 1000;
@@ -290,7 +186,7 @@ body::before{
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -299,10 +195,11 @@ body::before{
 .modal-content {
     background-color: white;
     padding: 30px;
-    border-radius: 15px;
+    border-radius: 20px;
     text-align: center;
     max-width: 400px;
     width: 90%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
 .close {
@@ -310,76 +207,46 @@ body::before{
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    color: #aaa;
 }
+
+.close:hover { color: #333; }
 
 #btn-fechar-modal {
-    background: #FC913A;
+    background: var(--cor-destaque);
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 25px;
     border-radius: 25px;
-    font-family: 'Inconsolata', monospace;
+    font-weight: bold;
     cursor: pointer;
-    margin-top: 15px;
-}
-
-/* Botão de Logout */
-.btn-logout {
-    position: absolute;
-    bottom: -20px;
-    left: 20px;
-    width: 70px;
-    height: 70px;
-    background-color: #FF6B6B;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    color: #000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
-}
-
-.btn-logout:hover {
-    transform: scale(1.1);
-    background-color: #FF5252;
-}
-
-/* Ações do modal de logout */
-.modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
     margin-top: 20px;
 }
 
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+}
+
 .btn-confirmar-logout, .btn-cancelar-logout {
-    padding: 10px 20px;
+    padding: 12px 25px;
     border: none;
     border-radius: 25px;
-    font-family: 'Inconsolata', monospace;
     cursor: pointer;
     font-weight: bold;
-    transition: all 0.3s ease;
+    font-size: 1rem;
 }
 
 .btn-confirmar-logout {
-    background: #FF6B6B;
+    background: var(--cor-botao);
     color: white;
 }
-
-.btn-confirmar-logout:hover {
-    background: #FF5252;
-}
+.btn-confirmar-logout:hover { background: #d32f2f; }
 
 .btn-cancelar-logout {
-    background: #FC913A;
-    color: white;
+    background: #ccc;
+    color: #333;
 }
-
-.btn-cancelar-logout:hover {
-    background: #FF8C42;
-}
+.btn-cancelar-logout:hover { background: #bbb; }    

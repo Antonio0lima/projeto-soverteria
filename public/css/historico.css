@@ -1,31 +1,38 @@
-/* Reset básico e Fontes */
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
+
+:root {
+    --cor-fundo: #f0f0f0;
+    --cor-card: #EDE574;
+    --cor-destaque: #ff914d;
+    --cor-botao: #ff5e6a;
+    --cor-texto: #333;
+}
+
+/* --- GERAL --- */
 body {
     font-family: 'Inconsolata', monospace;
-    background-color: #f7f7f7;
+    background-color: var(--cor-fundo);
     margin: 0;
     padding: 0;
-}
-body{
+    color: var(--cor-texto);
     background-image: url('/img/sorveteBackground2.jpeg');
-    background-size: cover;         /* Estica a imagem para cobrir toda a área */
-    background-repeat: no-repeat;   /* Evita repetição */
-    background-position: center;    /* Centraliza a imagem */
-    
-
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-body::before{
+
+body::before {
     content: "";
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/img/sorveteBackground2.jpeg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: blur(8px);
-  
-  z-index: -1;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/img/sorveteBackground2.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(8px);
+    z-index: -1;
 }
 
 .container-historico {
@@ -34,7 +41,7 @@ body::before{
     padding: 0 20px;
 }
 
-/* Header com os filtros */
+/* --- HEADER --- */
 .header-historico {
     display: flex;
     justify-content: space-between;
@@ -45,25 +52,15 @@ body::before{
 }
 
 .header-historico h1 {
-    font-size: 2rem;
-    color: #333;
-    margin: 0;
+    font-size: 2.5rem;      
+    color: var(--cor-destaque);
+    text-align: center;     
+    margin-bottom: 30px;    
+    width: 100%;
+    flex-basis: 100%;
 }
 
-.filtros {
-    display: flex;
-    gap: 10px;
-}
-
-.filtro {
-    width: 80px;
-    height: 30px;
-    background-color: #FC913A;
-    border-radius: 20px;
-    display: inline-block;
-}
-
-/* --- GRID LAYOUT CORRIGIDO --- */
+/* --- GRID E CARDS --- */
 .grid-pedidos {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -71,12 +68,11 @@ body::before{
     grid-auto-rows: minmax(200px, auto);
 }
 
-/* Estilo Base dos Cards */
 .card {
-    background-color: #EAF966;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background-color: var(--cor-card);
+    border-radius: 30px;
+    padding: 25px;
+    box-shadow: 5px 8px 12px rgba(0,0,0,0.15);
     display: flex;
     flex-direction: column;
     transition: transform 0.2s;
@@ -85,15 +81,14 @@ body::before{
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    box-shadow: 5px 12px 20px rgba(0,0,0,0.2);
 }
 
-/* --- QUADRADO A (Destaque) --- */
+/* --- DESTAQUE (Último Pedido) --- */
 .destaque {
     grid-column: span 2;
-    background-color: #E1F5C4;
+    background-color: #E1F5C4; /* Cor original recuperada */
     min-height: 250px;
-    border-color: #fff;
 }
 
 .card-header {
@@ -113,7 +108,7 @@ body::before{
 .card-body h2 {
     font-size: 1.8rem;
     margin: 10px 0;
-    color: #333;
+    color: var(--cor-texto);
 }
 
 .card-body .produtos {
@@ -124,14 +119,14 @@ body::before{
     max-height: 80px;
     overflow: hidden;
     display: -webkit-box;
-    
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
 }
 
 .card-body .valor {
     font-size: 1.8rem;
     font-weight: bold;
-    color: #FF4E50;
+    color: var(--cor-botao);
     margin-top: 15px;
 }
 
@@ -142,30 +137,33 @@ body::before{
 }
 
 .btn-detalhes {
-    background: #FC913A;
+    background: var(--cor-botao);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
+    padding: 12px 25px;
+    border-radius: 50px;
     font-family: 'Inconsolata', monospace;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: transform 0.2s;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-detalhes:hover {
-    background: #e58232;
+    transform: scale(1.05);
+    background-color: #ff404e;
 }
 
-/* --- QUADRADO B (Vazio) --- */
+/* --- VAZIO E ITENS MENORES --- */
 .vazio {
     grid-column: span 1;
-    background-color: #EAF966;
+    background-color: var(--cor-card);
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.7;
-    border: 2px dashed #bbb;
+    opacity: 0.6;
+    border: 3px dashed #bbb;
     min-height: 200px;
 }
 
@@ -182,10 +180,9 @@ body::before{
     margin-bottom: 10px;
 }
 
-/* --- QUADRADOS C (Histórico) --- */
 .item-historico {
     grid-column: span 1;
-    background-color: #F9F967;
+    background-color: var(--cor-card);
     min-height: 180px;
     justify-content: space-between;
 }
@@ -199,13 +196,13 @@ body::before{
 
 .card-header-mini .id {
     font-weight: bold;
-    color: #333;
-    font-size: 0.9rem;
+    color: var(--cor-texto);
+    font-size: 1rem;
 }
 
 .card-header-mini .data-mini {
     color: #666;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .card-body-mini {
@@ -216,21 +213,21 @@ body::before{
 .card-body-mini .resumo-prod {
     margin: 0;
     color: #555;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     line-height: 1.3;
-    max-height: 40px;
+    max-height: 45px;
     overflow: hidden;
     display: -webkit-box;
-   
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
 .valor-mini {
     display: block;
     margin-top: 8px;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: bold;
-    color: #FF4E50;
+    color: var(--cor-botao);
 }
 
 .card-status-mini {
@@ -243,13 +240,13 @@ body::before{
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     display: inline-block;
 }
 
-/* Tags de Status */
+/* --- STATUS --- */
 .tag-status {
     padding: 5px 12px;
     border-radius: 15px;
@@ -258,49 +255,20 @@ body::before{
     text-transform: uppercase;
 }
 
-.tag-status.confirmado, 
-.status-dot.confirmado { 
-    background-color: #4CAF50; 
-    color: white; 
-}
+.tag-status.confirmado, .status-dot.confirmado { background-color: #4CAF50; color: white; }
+.tag-status.aguardando, .status-dot.aguardando { background-color: #FFC107; color: black; }
+.tag-status.cancelado, .status-dot.cancelado { background-color: #F44336; color: white; }
+.tag-status.aguarda_confirmacao, .status-dot.aguarda_confirmacao { background-color: #FFC107; color: black; }
+.tag-status.concluido, .status-dot.concluido { background-color: #4CAF50; color: white; }
+.tag-status.aguarda_entrega, .status-dot.aguarda_entrega { background-color: #2196F3; color: white; }
 
-.tag-status.aguardando,
-.status-dot.aguardando { 
-    background-color: #FFC107; 
-    color: black; 
-}
-
-.tag-status.cancelado,
-.status-dot.cancelado { 
-    background-color: #F44336; 
-    color: white; 
-}
-
-.tag-status.aguarda_confirmacao,
-.status-dot.aguarda_confirmacao { 
-    background-color: #FFC107; 
-    color: black; 
-}
-
-.tag-status.concluido,
-.status-dot.concluido { 
-    background-color: #4CAF50; 
-    color: white; 
-}
-
-.tag-status.aguarda_entrega,
-.status-dot.aguarda_entrega { 
-    background-color: #2196F3; 
-    color: white; 
-}
-
-/* Estados quando não há pedidos */
+/* --- QUANDO NÃO HÁ PEDIDOS --- */
 .sem-pedidos {
     grid-column: 1 / -1;
     text-align: center;
     padding: 60px 20px;
-    background-color: #EAF966;
-    border-radius: 20px;
+    background-color: var(--cor-card);
+    border-radius: 30px;
 }
 
 .sem-pedidos p {
@@ -309,82 +277,27 @@ body::before{
     margin: 0;
 }
 
-/* Responsividade para Tablet */
+/* --- RESPONSIVIDADE --- */
 @media (max-width: 1024px) {
-    .grid-pedidos {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .destaque {
-        grid-column: 1 / -1;
-    }
-    
-    .vazio {
-        grid-column: span 1;
-    }
+    .grid-pedidos { grid-template-columns: repeat(2, 1fr); }
+    .destaque { grid-column: 1 / -1; }
+    .vazio { grid-column: span 1; }
 }
 
-/* Responsividade para Celular */
 @media (max-width: 768px) {
-    .container-historico {
-        margin: 20px auto;
-        padding: 0 15px;
-    }
-    
-    .header-historico {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .filtros {
-        align-self: flex-end;
-    }
-    
-    .grid-pedidos {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .destaque, 
-    .vazio, 
-    .item-historico {
-        grid-column: 1;
-    }
-    
-    .vazio {
-        display: none; /* Esconde o quadrado vazio no mobile */
-    }
-    
-    .card {
-        padding: 15px;
-        min-height: 150px;
-    }
-    
-    .destaque {
-        min-height: 200px;
-    }
-    
-    .card-body h2 {
-        font-size: 1.5rem;
-    }
-    
-    .card-body .valor {
-        font-size: 1.5rem;
-    }
+    .container-historico { margin: 20px auto; padding: 0 15px; }
+    .header-historico { flex-direction: column; align-items: flex-start; }
+    .grid-pedidos { grid-template-columns: 1fr; gap: 15px; }
+    .destaque, .vazio, .item-historico { grid-column: 1; }
+    .vazio { display: none; }
+    .card { padding: 20px; min-height: 150px; }
+    .destaque { min-height: 200px; }
+    .card-body h2, .card-body .valor { font-size: 1.5rem; }
 }
 
-/* Animações suaves */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.card {
-    animation: fadeIn 0.5s ease-out;
-}
+.card { animation: fadeIn 0.5s ease-out; }
