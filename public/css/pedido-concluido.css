@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
+
+:root {
+    --cor-fundo: #f0f0f0;
+    --cor-card: #EDE574; /* Amarelo do site */
+    --cor-botao: #ff5e6a; /* Vermelho/Rosa */
+    --cor-texto: #333;
+    --cor-sucesso: #4CAF50;
+}
+
+body {
+    font-family: 'Inconsolata', monospace;
+    background-color: var(--cor-fundo);
+    margin: 0; 
+    padding: 0;
+}
+
+.container-sucesso {
+    max-width: 600px;
+    margin: 80px auto;
+    background-color: var(--cor-card);
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 5px 8px 12px rgba(0,0,0,0.15);
+}
+
+.icone-sucesso {
+    font-size: 5em;
+    color: var(--cor-sucesso);
+    margin-bottom: 20px;
+}
+
+.container-sucesso h1 {
+    color: var(--cor-texto);
+    margin-bottom: 10px;
+}
+
+.container-sucesso p {
+    color: #555;
+    font-size: 1.1em;
+    margin-bottom: 30px;
+}
+
+.btn-voltar {
+    display: inline-block;
+    background-color: var(--cor-botao);
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: transform 0.2s;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+}
+
+.btn-voltar:hover {
+    transform: scale(1.05);
+    background-color: #ff404e;
+}
+
+.link-cardapio {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--cor-botao);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.link-cardapio:hover {
+    text-decoration: underline;
+}

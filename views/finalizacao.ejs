@@ -82,13 +82,12 @@
             let carrinho = JSON.parse(localStorage.getItem('carrinho_sorveteria') || '[]');
 
             if (carrinho.length === 0) {
-                // Se vazio, volta pro cardápio
                 window.location.href = "/cardapio";
                 return;
             }
 
             // 2. DESENHAR HTML
-            listaResumo.innerHTML = ""; 
+            listaResumo.innerHTML = "";
             let total = 0;
 
             carrinho.forEach(item => {
@@ -123,12 +122,10 @@
             btnConcluir.addEventListener('click', async () => {
                 const idCliente = idClienteInput.value;
                 
-                // --- VERIFICAÇÃO SILENCIOSA (SEM POPUP) ---
                 if (!idCliente) {
-                    window.location.href = "/"; // Redireciona para Login
+                    window.location.href = "/"; 
                     return;
                 }
-                // ------------------------------------------
 
                 btnConcluir.innerText = "Processando...";
                 btnConcluir.disabled = true;
@@ -157,9 +154,9 @@
                     const resultado = await resp.json();
 
                     if (resultado.sucesso) {
-                        alert("✅ Pedido realizado com sucesso!");
                         localStorage.removeItem('carrinho_sorveteria');
-                        window.location.href = "/perfil"; 
+                        // REDIRECIONA PARA A NOVA PÁGINA
+                        window.location.href = "/pedido-concluido"; 
                     } else {
                         alert("Erro ao salvar: " + (resultado.erro || "Desconhecido"));
                         btnConcluir.innerText = "CONCLUIR PEDIDO";
