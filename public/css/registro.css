@@ -1,4 +1,16 @@
-/* Reset e Fonte */
+/* Importação da Fonte */
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
+
+/* Variáveis Padrão */
+:root {
+    --cor-fundo: #f0f0f0;
+    --cor-card: #EDE574;
+    --cor-destaque: #ff914d;
+    --cor-botao-hover: #e58232;
+    --cor-texto: #333;
+}
+
+/* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -7,46 +19,42 @@
 
 body {
     font-family: 'Inconsolata', monospace;
-    background-color: #ffffff;
-    color: #333;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
     min-height: 100vh;
-
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
-}
-body{
-    background-image: url('/img/sorveteBackground2.jpeg');
-    background-size: cover;         /* Estica a imagem para cobrir toda a área */
-    background-repeat: no-repeat;   /* Evita repetição */
-    background-position: center;    /* Centraliza a imagem */
     
-
+    background-image: url('/img/sorveteBackground2.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-body::before{
+
+body::before {
     content: "";
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/img/sorveteBackground2.jpeg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: blur(8px);
-  
-  z-index: -1;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/img/sorveteBackground2.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(8px);
+    z-index: -1;
 }
 
-/* --- CARD DE REGISTRO --- */
+/* --- CARD REGISTRO --- */
 .card-registro {
-    background-color: #F9D423;
+    background-color: var(--cor-card);
     width: 100%;
     max-width: 450px;
-    border-radius: 25px;
+    border-radius: 30px;
     padding: 40px 35px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    box-shadow: 5px 8px 12px rgba(0,0,0,0.15);
     animation: aparecer 0.3s ease;
 }
 
@@ -55,7 +63,6 @@ body::before{
     to   { opacity: 1; transform: scale(1); }
 }
 
-/* Título */
 .card-registro h1 {
     text-align: center;
     margin-bottom: 30px;
@@ -64,7 +71,7 @@ body::before{
     font-weight: 700;
 }
 
-/* Campos */
+/* Campos e Inputs */
 .campo {
     display: flex;
     flex-direction: column;
@@ -72,51 +79,53 @@ body::before{
 }
 
 .campo label {
-    font-size: 15px;
+    font-size: 1.1rem;
     margin-bottom: 8px;
     font-weight: 700;
     color: #000;
+    margin-left: 10px;
 }
 
-/* Input */
 .input-box {
     background-color: #ffffff;
-    border-radius: 40px;
+    border-radius: 50px;
     padding: 14px 22px;
     font-size: 17px;
     border: 2px solid transparent;
     transition: 0.3s;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-family: 'Inconsolata', monospace;
 }
 
 .input-box:focus {
-    border-color: #FC913A;
+    border-color: var(--cor-destaque);
     box-shadow: 0 3px 10px rgba(0,0,0,0.12);
     outline: none;
 }
 
-/* BOTÃO */
+/* Botão */
 .btn-registrar {
     margin-top: 15px;
     width: 100%;
-    background-color: #FC913A;
+    background-color: var(--cor-destaque);
     border: none;
     padding: 15px;
     border-radius: 50px;
     font-size: 20px;
     font-weight: 700;
-    color: #000;
+    color: white;
     cursor: pointer;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     transition: transform 0.2s, background 0.2s;
+    font-family: 'Inconsolata', monospace;
 }
 
 .btn-registrar:hover {
     transform: scale(1.04);
-    background-color: #FF9F50;
+    background-color: var(--cor-botao-hover);
 }
 
-/* Link */
+/* Link Login */
 .link-login {
     margin-top: 22px;
     text-align: center;
@@ -124,16 +133,18 @@ body::before{
 }
 
 .link-login a {
-    color: #FC913A;
+    color: var(--cor-destaque);
     font-weight: 700;
     text-decoration: none;
+    transition: color 0.2s;
 }
 
 .link-login a:hover {
     text-decoration: underline;
+    color: var(--cor-botao-hover);
 }
 
-/* Mobile */
+/* Responsividade */
 @media (max-width: 480px) {
     .card-registro {
         padding: 30px 25px;
