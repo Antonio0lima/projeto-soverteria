@@ -18,6 +18,7 @@
     <% } %>
 
     <div class="pagina-container">
+   
         <h1 class="titulo-pagina"><i class="fas fa-check-circle"></i> Finalização</h1>
 
         <div class="grid-finalizacao">
@@ -26,7 +27,7 @@
                 <h2>Pagamento via PIX</h2>
                 
                 <div class="qrcode-area">
-                    <i class="fas fa-qrcode qrcode-placeholder"></i>
+                     <i class="fas fa-qrcode qrcode-placeholder"></i>
                     <p>QRCode indisponível no momento</p>
                 </div>
 
@@ -71,14 +72,16 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            console.log("Script iniciado!");
-
+            
+            // 1. ELEMENTOS
             const listaResumo = document.querySelector('.lista-resumo');
             const totalEl = document.querySelector('.total-final span');
             const btnConcluir = document.querySelector('.btn-concluir');
             const idClienteInput = document.getElementById('id-cliente-final');
+            const fileInput = document.getElementById('comprovante-upload');
+            const nomeArquivoDiv = document.querySelector('.nome-arquivo');
             
-            // 1. CARREGAR CARRINHO
+            // 2. CARREGAR CARRINHO
             let carrinho = JSON.parse(localStorage.getItem('carrinho_sorveteria') || '[]');
 
             if (carrinho.length === 0) {
@@ -86,13 +89,25 @@
                 return;
             }
 
-            // 2. DESENHAR HTML
+            // 3. UI: MOSTRAR NOME DO ARQUIVO SELECIONADO
+            if(fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files.length > 0) {
+                        nomeArquivoDiv.textContent = "Arquivo: " + this.files[0].name;
+                        nomeArquivoDiv.style.color = "#333";
+                        nomeArquivoDiv.style.fontWeight = "bold";
+                    } else {
+                        nomeArquivoDiv.textContent = "";
+                    }
+                });
+            }
+
+            // 4. DESENHAR HTML
             listaResumo.innerHTML = "";
             let total = 0;
 
             carrinho.forEach(item => {
                 total += item.preco_total;
-                
                 let textoAdd = "";
                 if(item.adicionais && item.adicionais.length > 0) {
                     const nomes = item.adicionais.map(a => a.nome).join(', ');
@@ -105,7 +120,6 @@
                 div.style.paddingBottom = "5px";
                 div.style.display = "flex";
                 div.style.justifyContent = "space-between";
-
                 div.innerHTML = `
                     <div>
                         <strong>${item.quantidade}x ${item.produto_nome}</strong> <small>(${item.tamanho})</small>
@@ -118,45 +132,39 @@
 
             totalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
 
-            // 3. AÇÃO DO BOTÃO
+            // 5. AÇÃO DO BOTÃO (Com FormData)
             btnConcluir.addEventListener('click', async () => {
                 const idCliente = idClienteInput.value;
                 
                 if (!idCliente) {
+                    alert("Você precisa estar logado para concluir!");
                     window.location.href = "/"; 
                     return;
                 }
 
-                btnConcluir.innerText = "Processando...";
+                btnConcluir.innerText = "Enviando...";
                 btnConcluir.disabled = true;
 
-                let descricaoProdutos = carrinho.map(item => {
-                    let desc = `${item.quantidade}x ${item.produto_nome} (${item.tamanho})`;
-                    if(item.adicionais.length > 0) {
-                        desc += ` c/ ${item.adicionais.map(a => a.nome).join('+')}`;
-                    }
-                    return desc;
-                }).join(" | ");
+                const formData = new FormData();
+                formData.append('id_cliente', idCliente);
+                formData.append('valor', total.toFixed(2));
+                formData.append('produtos', JSON.stringify(carrinho));
 
-                const dadosParaBanco = {
-                    id_cliente: idCliente,
-                    produtos: descricaoProdutos,
-                    valor: total
-                };
+                if (fileInput && fileInput.files.length > 0) {
+                    formData.append('comprovante', fileInput.files[0]);
+                }
 
                 try {
                     const resp = await fetch('/finalizar-pedido', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dadosParaBanco)
+                        body: formData
                     });
-
+                    
                     const resultado = await resp.json();
 
                     if (resultado.sucesso) {
                         localStorage.removeItem('carrinho_sorveteria');
-                        // REDIRECIONA PARA A NOVA PÁGINA
-                        window.location.href = "/pedido-concluido"; 
+                        window.location.href = "/pedido-concluido";
                     } else {
                         alert("Erro ao salvar: " + (resultado.erro || "Desconhecido"));
                         btnConcluir.innerText = "CONCLUIR PEDIDO";
