@@ -4,38 +4,178 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lista de clientes</title>
-  <link rel="stylesheet" href="/css/fila-pedidos-lista-clientes.css">
+  <title>Lista de Clientes</title>
+  <link rel="stylesheet" href="/css/lista-clientes.css">
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/navbar.css">
+  <script src="https://kit.fontawesome.com/a2e860a6f5.js" crossorigin="anonymous"></script>
 </head>
 
 <body> 
   <% if (usuario && usuario.tipo==="admin" ) { %>
-        <%- include("partials/navbar/navbar-adm") %>
-            <% } else { %>
-                <%- include("partials/navbar/navbar") %>
-                    <% } %>
-<div class="menu">
-  <span class="botao_add">+</span>
-  <div class="linhaPesquisa">
-    <span class="botao_add">F</span>
-    <input type="text" class="barra-pesquisa">
+    <%- include("partials/navbar/navbar-adm") %>
+  <% } else { %>
+    <%- include("partials/navbar/navbar") %>
+  <% } %>
+
+  <div class="lista-clientes">
+    <h1 class="titulo-pagina">
+      <i class="fas fa-users"></i> Lista de Clientes
+    </h1>
+
+    <% if (clientes.length === 0) { %>
+      <div class="sem-clientes">
+        <i class="fas fa-user-slash"></i>
+        <h3>Nenhum cliente cadastrado</h3>
+        <p>Quando houver clientes cadastrados, eles aparecerão aqui.</p>
+      </div>
+    <% } else { %>
+      <% clientes.forEach(cliente => { %>
+        <div class="linha-cliente">
+          <div class="info-cliente">
+            <div class="nome-cliente">
+              <%= cliente.nome %>
+              <% if (cliente.tipo_usuario === 'admin') { %>
+                <span class="badge-tipo badge-admin">ADMIN</span>
+              <% } else { %>
+                <span class="badge-tipo badge-cliente">CLIENTE</span>
+              <% } %>
+            </div>
+            <div class="email-cliente"><%= cliente.email %></div>
+          </div>
+
+          <!-- ÍCONE DE OLHO -->
+          <div class="botao-ver" onclick='mostrarCliente(<%- JSON.stringify(cliente) %>)'>
+            <i class="fa-solid fa-eye"></i>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
   </div>
-</div>
 
-<div class="lista-clientes">
-  <% clientes.forEach(cliente => { %>
-    <div class="linha-cliente">
-      <div><%= cliente.nome %></div>
-      <div class="botao-editar">E</div>
+  <!-- POPUP -->
+  <div id="popup-cliente" class="popup oculto">
+    <div class="popup-conteudo">
+      <div class="popup-header">
+        <h2><i class="fas fa-user-circle"></i> Detalhes do Cliente</h2>
+        <span class="fechar" onclick="fecharPopup()">×</span>
+      </div>
+
+      <div class="info-detalhada">
+        <div class="info-item">
+          <span class="info-label">Nome:</span>
+          <span class="info-value" id="c-nome"></span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Email:</span>
+          <span class="info-value" id="c-email"></span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Tipo de Usuário:</span>
+          <span class="info-value" id="c-tipo"></span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Data de Nascimento:</span>
+          <span class="info-value" id="c-nasc"></span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Data de Cadastro:</span>
+          <span class="info-value" id="c-cad"></span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Chave PIX:</span>
+          <span class="info-value" id="c-pix"></span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Celular:</span>
+          <span class="info-value" id="c-celular"></span>
+        </div>
+
+        <div class="estatisticas">
+          <h3><i class="fas fa-chart-bar"></i> Estatísticas</h3>
+          <div class="info-item">
+            <span class="info-label">Total de Pedidos:</span>
+            <span class="info-value" id="c-total-pedidos">Carregando...</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Último Pedido:</span>
+            <span class="info-value" id="c-ultimo-pedido">Carregando...</span>
+          </div>
+        </div>
+      </div>
     </div>
-  <% }) %>
-</div>
+  </div>
 
-<div class="popup">
-  
-</div>
+  <script>
+    function formatarData(data) {
+      if (!data) return "Não informado";
+      const dataObj = new Date(data);
+      return dataObj.toLocaleDateString('pt-BR');
+    }
 
+    function mostrarCliente(cliente) {
+      // Preencher informações básicas
+      document.getElementById("c-nome").textContent = cliente.nome || "Não informado";
+      document.getElementById("c-email").textContent = cliente.email || "Não informado";
+      document.getElementById("c-tipo").innerHTML = cliente.tipo_usuario === 'admin' 
+        ? '<span class="badge-tipo badge-admin">ADMINISTRADOR</span>' 
+        : '<span class="badge-tipo badge-cliente">CLIENTE</span>';
+      document.getElementById("c-nasc").textContent = formatarData(cliente.data_nascimento);
+      document.getElementById("c-cad").textContent = formatarData(cliente.data_cadastro);
+      document.getElementById("c-pix").textContent = cliente.chave_pix || "Não cadastrada";
+      document.getElementById("c-celular").textContent = cliente.numero_celular || "Não informado";
+
+      // Buscar estatísticas do cliente
+      buscarEstatisticasCliente(cliente.id);
+
+      // Mostrar popup
+      document.getElementById("popup-cliente").classList.remove("oculto");
+    }
+
+    async function buscarEstatisticasCliente(clienteId) {
+      try {
+        const response = await fetch(`/api/cliente/${clienteId}/estatisticas`);
+        const data = await response.json();
+        
+        if (data.sucesso) {
+          document.getElementById("c-total-pedidos").textContent = data.totalPedidos || 0;
+          document.getElementById("c-ultimo-pedido").textContent = data.ultimoPedido 
+            ? formatarData(data.ultimoPedido) 
+            : "Nenhum pedido";
+        } else {
+          document.getElementById("c-total-pedidos").textContent = "Erro ao carregar";
+          document.getElementById("c-ultimo-pedido").textContent = "Erro ao carregar";
+        }
+      } catch (erro) {
+        console.error('Erro ao buscar estatísticas:', erro);
+        document.getElementById("c-total-pedidos").textContent = "Erro";
+        document.getElementById("c-ultimo-pedido").textContent = "Erro";
+      }
+    }
+
+    function fecharPopup() {
+      document.getElementById("popup-cliente").classList.add("oculto");
+    }
+
+    // Fechar popup clicando fora
+    document.getElementById('popup-cliente').addEventListener('click', function(e) {
+      if (e.target === this) {
+        fecharPopup();
+      }
+    });
+
+    // Fechar popup com ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        fecharPopup();
+      }
+    });
+  </script>
 </body>
-
+</html>

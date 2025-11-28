@@ -97,3 +97,56 @@
             }
         });
     
+        // Função para fazer logout
+async function fazerLogout() {
+    try {
+        const response = await fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const resultado = await response.json();
+        
+        if (resultado.sucesso) {
+            // Redireciona para a página inicial após logout
+            window.location.href = '/';
+        } else {
+            alert('Erro ao fazer logout: ' + (resultado.erro || 'Erro desconhecido'));
+        }
+    } catch (erro) {
+        console.error('Erro ao fazer logout:', erro);
+        alert('Erro de conexão. Tente novamente.');
+    }
+}
+
+// Mostrar modal de confirmação de logout
+function mostrarModalLogout() {
+    document.getElementById('modal-logout').style.display = 'flex';
+}
+
+// Fechar modal de logout
+function fecharModalLogout() {
+    document.getElementById('modal-logout').style.display = 'none';
+}
+
+// Event Listeners para logout
+document.getElementById('btn-logout').addEventListener('click', mostrarModalLogout);
+document.getElementById('btn-confirmar-logout').addEventListener('click', fazerLogout);
+document.getElementById('btn-cancelar-logout').addEventListener('click', fecharModalLogout);
+
+// Fecha modal de logout clicando fora
+window.addEventListener('click', function(event) {
+    const modalLogout = document.getElementById('modal-logout');
+    if (event.target === modalLogout) {
+        fecharModalLogout();
+    }
+});
+
+// Fecha modal de logout com ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        fecharModalLogout();
+    }
+});

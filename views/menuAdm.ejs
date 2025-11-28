@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo</title>
+
+  <link rel="stylesheet" href="/css/admin-menu.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+  <% if (usuario && usuario.tipo==="admin") { %>
+      <%- include("partials/navbar/navbar-adm") %>
+  <% } else { %>
+      <%- include("partials/navbar/navbar") %>
+  <% } %>
+
+  <div class="menu-container">
+
+      <h1 class="titulo">Painel Administrativo</h1>
+
+      <div class="cards">
+
+          <a class="card" href="/fila-pedidos">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <h2>Fila de Pedidos</h2>
+              <p>Ver, gerenciar e acompanhar os pedidos ativos.</p>
+          </a>
+
+          <a class="card" href="/lista-clientes">
+              <i class="fa-solid fa-users"></i>
+              <h2>Lista de Clientes</h2>
+              <p>Consultar todos os clientes cadastrados.</p>
+          </a>
+
+          <a class="card" href="/lista-produtos">
+              <i class="fa-solid fa-box"></i>
+              <h2>Lista de Produtos</h2>
+              <p>Ver, editar ou cadastrar novos produtos.</p>
+          </a>
+
+      </div>
+
+  </div>
+
+</body>
+</html>

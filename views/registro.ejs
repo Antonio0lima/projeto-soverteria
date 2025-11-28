@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registrar</title>
+  <link rel="stylesheet" href="/css/registro.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="card-registro">
+    <h1>Criar conta</h1>
+
+    <form action="/registrar" method="POST" class="form-registro">
+
+      <div class="campo">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" class="input-box" required>
+      </div>
+
+      <div class="campo">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="input-box" required>
+      </div>
+
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" class="input-box" required>
+      </div>
+
+      <button type="submit" class="btn-registrar">Registrar</button>
+
+      <p class="link-login">
+        Já tem conta?  
+        <a href="/">Entrar</a>
+      </p>
+
+    </form>
+  </div>
+
+</body>
+</html>
