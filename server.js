@@ -81,6 +81,12 @@ app.get('/finalizacao', (req, res) => {
     res.render('finalizacao');
 });
 
+// === NOVA ROTA DE SUCESSO ===
+app.get('/pedido-concluido', (req, res) => {
+    res.render('pedido-concluido');
+});
+// ============================
+
 // === ROTA PRINCIPAL DO CARDÁPIO ===
 app.get('/cardapio', async (req, res) => {
   try {

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Confirmado</title>
+    
+    <link rel="stylesheet" href="/css/pedido-concluido.css">
+    
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+</head>
+<body>
+
+    <% if (typeof usuario !== 'undefined' && usuario && usuario.tipo === "admin") { %>
+        <%- include("partials/navbar/navbar-adm") %>
+    <% } else { %>
+        <%- include("partials/navbar/navbar") %>
+    <% } %>
+
+    <div class="container-sucesso">
+        <i class="fas fa-check-circle icone-sucesso"></i>
+        <h1>Pedido Recebido!</h1>
+        <p>Seu pedido foi enviado para a nossa cozinha e já está sendo preparado.</p>
+        
+        <a href="/perfil" class="btn-voltar">
+            Ver Meus Pedidos
+        </a>
+        <br>
+        <a href="/cardapio" class="link-cardapio">Voltar ao Cardápio</a>
+    </div>
+
+</body>
+</html>
