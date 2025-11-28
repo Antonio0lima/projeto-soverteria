@@ -59,7 +59,12 @@ app.post('/inicial', async (req, res) => {
     
     const usuario = usuarios[0]; 
     if (senha === usuario.senha) {
-      req.session.user = { id: usuario.id, nome: usuario.nome, tipo: usuario.tipo_usuario };
+      req.session.user = { 
+        id: usuario.id, 
+        nome: usuario.nome, 
+        email: usuario.email,
+        tipo: usuario.tipo_usuario 
+      };
       return res.redirect('/inicial');
     } else {
       return res.redirect('/');
@@ -71,8 +76,106 @@ app.post('/inicial', async (req, res) => {
 });
 
 app.get('/inicial', (req, res) => { res.render('inicial'); });
-app.get('/perfil', (req, res) => { res.render('perfil'); });
 app.get('/carrinho', (req, res) => { res.render('carrinho'); });
+
+app.get('/perfil', async (req, res) => { 
+  try {
+    if (!req.session.user) {
+      return res.redirect('/');
+    }
+
+    // Busca os dados completos do usuário logado
+    const [usuarios] = await pool.query('SELECT * FROM clientes WHERE id = ?', [req.session.user.id]);
+    
+    if (usuarios.length === 0) {
+      return res.status(404).send("Usuário não encontrado");
+    }
+
+    const usuario = usuarios[0];
+
+    // Busca o total de pedidos do usuário
+    const [pedidosCount] = await pool.query('SELECT COUNT(*) as total FROM pedidos WHERE id_cliente = ?', [req.session.user.id]);
+    
+    // Formata os dados para a view
+    const dadosUsuario = {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      data_nascimento: usuario.data_nascimento ? formatarDataParaInput(usuario.data_nascimento) : '',
+      data_nascimento_formatada: usuario.data_nascimento ? formatarData(usuario.data_nascimento) : 'Não informada',
+      data_cadastro: usuario.data_cadastro ? formatarData(usuario.data_cadastro) : 'Não informada',
+      chave_pix: usuario.chave_pix || 'Não cadastrada',
+      total_pedidos: pedidosCount[0].total
+    };
+
+    res.render('perfil', { usuario: dadosUsuario });
+  } catch (erro) {
+    console.error('Erro ao carregar perfil:', erro);
+    res.status(500).send("Erro ao carregar perfil");
+  }
+});
+
+// Rota para atualizar dados do perfil
+app.post('/atualizar-perfil', async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ sucesso: false, erro: "Usuário não logado" });
+    }
+
+    const { nome, data_nascimento, chave_pix } = req.body;
+    const userId = req.session.user.id;
+
+    console.log("Dados recebidos para atualização:", { nome, data_nascimento, chave_pix });
+
+    // Validações básicas
+    if (!nome || nome.trim() === '') {
+      return res.status(400).json({ sucesso: false, erro: "Nome é obrigatório" });
+    }
+
+    // Atualiza no banco de dados
+    const query = `
+      UPDATE clientes 
+      SET nome = ?, data_nascimento = ?, chave_pix = ?
+      WHERE id = ?
+    `;
+    
+    await pool.query(query, [nome.trim(), data_nascimento || null, chave_pix || null, userId]);
+
+    // Atualiza a sessão com o novo nome
+    req.session.user.nome = nome.trim();
+
+    res.json({ 
+      sucesso: true, 
+      mensagem: "Perfil atualizado com sucesso!",
+      dados: { nome: nome.trim() }
+    });
+
+  } catch (erro) {
+    console.error('Erro ao atualizar perfil:', erro);
+    res.status(500).json({ sucesso: false, erro: "Erro interno ao atualizar perfil" });
+  }
+});
+
+// Função auxiliar para formatar data para exibição
+function formatarData(data) {
+  if (!data) return '';
+  const dataObj = new Date(data);
+  const dia = String(dataObj.getDate()).padStart(2, '0');
+  const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+  const ano = dataObj.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+// Função auxiliar para formatar data para input type="date"
+function formatarDataParaInput(data) {
+  if (!data) return '';
+  const dataObj = new Date(data);
+  const ano = dataObj.getFullYear();
+  const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+  const dia = String(dataObj.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
 
 // Rota da página de Finalização
 app.get('/finalizacao', (req, res) => {
@@ -189,6 +292,65 @@ app.post('/finalizar-pedido', async (req, res) => {
         console.error("Erro ao finalizar pedido:", err);
         res.status(500).json({ sucesso: false, erro: "Erro interno ao salvar pedido." });
     }
+});
+
+app.get("/historico", async (req, res) => {
+  try {
+    // Verifica se o usuário está logado
+    if (!req.session.user) {
+      return res.redirect('/');
+    }
+
+    const userId = req.session.user.id;
+
+    // Busca apenas os pedidos do usuário logado
+    const [rows] = await pool.query(`
+      SELECT p.*, c.nome AS nome_cliente
+      FROM pedidos p
+      JOIN clientes c ON p.id_cliente = c.id
+      WHERE p.id_cliente = ?
+      ORDER BY p.data_pedido DESC
+    `, [userId]);
+
+    console.log(`Encontrados ${rows.length} pedidos para o usuário ${userId}`);
+
+    const pedidosFormatados = rows.map(p => {
+      const data = new Date(p.data_pedido);
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = data.getFullYear();
+      const hora = String(data.getHours()).padStart(2, '0');
+      const min = String(data.getMinutes()).padStart(2, '0');
+      
+      // Processa os produtos para exibição
+      let produtosProcessados = [];
+      if (p.produtos) {
+        try {
+          if (typeof p.produtos === 'string') {
+            const parsed = JSON.parse(p.produtos);
+            produtosProcessados = Array.isArray(parsed) ? parsed : [parsed];
+          } else {
+            produtosProcessados = Array.isArray(p.produtos) ? p.produtos : [p.produtos];
+          }
+        } catch (e) {
+          console.error(`Erro ao processar produtos do pedido ${p.id}:`, e);
+          produtosProcessados = [{ descricao: p.produtos }];
+        }
+      }
+
+      return {
+        ...p,
+        data_pedido: `${dia}/${mes}/${ano} ${hora}:${min}`,
+        produtos: produtosProcessados
+      };
+    });
+
+    res.render("historico", { pedidos: pedidosFormatados });
+
+  } catch (err) {
+    console.error("Erro ao buscar pedidos:", err);
+    res.status(500).send("Erro ao buscar pedidos");
+  }
 });
 
 // --- ROTAS DO ADMIN ---

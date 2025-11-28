@@ -8,12 +8,12 @@
   <!-- Fontes e CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/navbar.css">
-  <link rel="stylesheet" href="/css/historico.css"> <!-- Novo arquivo CSS -->
+  <link rel="stylesheet" href="/css/historico.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body> 
-  <!-- Lógica da Navbar (Mantida) -->
+  <!-- Lógica da Navbar -->
   <% if (usuario && usuario.tipo === "admin") { %>
     <%- include("partials/navbar/navbar-adm") %>
   <% } else { %>
@@ -24,7 +24,7 @@
     
     <header class="header-historico">
       <h1>Meus Pedidos</h1>
-      <!-- Filtros decorativos (laranjas na imagem) -->
+      <!-- Filtros decorativos -->
       <div class="filtros">
         <span class="filtro"></span>
         <span class="filtro"></span>
@@ -45,42 +45,79 @@
           </div>
           <div class="card-body">
             <h2>Pedido #<%= ultimo.id %></h2>
-            <p class="produtos"><%= ultimo.produtos || ultimo.pedido %></p>
-            <p class="valor">R$ <%= ultimo.valor %></p>
+            <p class="produtos">
+              <% if (Array.isArray(ultimo.produtos) && ultimo.produtos.length > 0) { %>
+                <% ultimo.produtos.forEach((produto, index) => { %>
+                  <% if (index < 3) { %>
+                    • <%= produto.descricao || produto.nome || produto.produto_nome || JSON.stringify(produto) %><br>
+                  <% } %>
+                <% }) %>
+                <% if (ultimo.produtos.length > 3) { %>
+                  • +<%= ultimo.produtos.length - 3 %> itens...
+                <% } %>
+              <% } else { %>
+                <%= ultimo.produtos || "Detalhes do pedido" %>
+              <% } %>
+            </p>
+            <p class="valor">R$ <%= parseFloat(ultimo.valor).toFixed(2) %></p>
           </div>
           <div class="card-footer">
             <button class="btn-detalhes">Ver detalhes</button>
           </div>
         </div>
+
+        <!-- QUADRADO B: Espaço Vazio / Ação -->
+        <div class="card vazio">
+          <div class="conteudo-vazio">
+            <span>B</span>
+            <p>Espaço reservado</p>
+          </div>
+        </div>
+
+        <!-- QUADRADOS C: Histórico (Restante dos pedidos) -->
+        <% for(let i = 1; i < pedidos.length; i++) { %>
+          <% const p = pedidos[i]; %>
+          <div class="card item-historico">
+            <div class="card-header-mini">
+              <span class="id">#<%= p.id %></span>
+              <span class="data-mini"><%= p.data_pedido.split(' ')[0] %></span>
+            </div>
+            <div class="card-body-mini">
+              <p class="resumo-prod">
+                <% if (Array.isArray(p.produtos) && p.produtos.length > 0) { %>
+                  <% 
+                  let textoProdutos = "";
+                  p.produtos.slice(0, 2).forEach((produto, index) => {
+                    const itemTexto = produto.descricao || produto.nome || produto.produto_nome || JSON.stringify(produto);
+                    textoProdutos += (index > 0 ? " • " : "") + itemTexto;
+                  });
+                  
+                  if (p.produtos.length > 2) {
+                    textoProdutos += ` • +${p.produtos.length - 2} itens...`;
+                  }
+                  %>
+                  <%= textoProdutos.length > 50 ? textoProdutos.substring(0, 50) + '...' : textoProdutos %>
+                <% } else { %>
+                  Pedido #<%= p.id %>
+                <% } %>
+              </p>
+              <strong class="valor-mini">R$ <%= parseFloat(p.valor).toFixed(2) %></strong>
+            </div>
+            <div class="card-status-mini">
+              <span class="status-dot <%= p.status %>"></span> 
+              <span class="status-text"><%= p.status %></span>
+            </div>
+          </div>
+        <% } %>
+
       <% } else { %>
-        <div class="card destaque">
+        <!-- Quando não há pedidos -->
+        <div class="card sem-pedidos">
           <p>Você ainda não fez nenhum pedido.</p>
-        </div>
-      <% } %>
-
-      <!-- QUADRADO B: Espaço Vazio / Ação -->
-      <div class="card vazio">
-        <div class="conteudo-vazio">
-          <span>B</span>
-          <p>Espaço reservado</p>
-        </div>
-      </div>
-
-      <!-- QUADRADOS C: Histórico (Restante dos pedidos) -->
-      <% for(let i = 1; i < pedidos.length; i++) { %>
-        <% const p = pedidos[i]; %>
-        <div class="card item-historico">
-          <div class="card-header-mini">
-            <span class="id">#<%= p.id %></span>
-            <span class="data-mini"><%= p.data_pedido.split(' ')[0] %></span> <!-- Só a data -->
-          </div>
-          <div class="card-body-mini">
-            <p class="resumo-prod"><%= p.produtos || p.pedido %></p>
-            <strong class="valor-mini">R$ <%= p.valor %></strong>
-          </div>
-          <div class="card-status-mini">
-            <span class="status-dot <%= p.status %>"></span> <%= p.status %>
-          </div>
+          <p>Que tal explorar nosso cardápio?</p>
+          <a href="/cardapio" class="btn-detalhes" style="display: inline-block; margin-top: 15px;">
+            Ver Cardápio
+          </a>
         </div>
       <% } %>
 
