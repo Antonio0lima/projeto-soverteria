@@ -299,3 +299,64 @@ body {
     cursor: pointer;
     margin-top: 15px;
 }
+
+/* Botão de Logout */
+.btn-logout {
+    position: absolute;
+    bottom: -20px;
+    left: 20px;
+    width: 70px;
+    height: 70px;
+    background-color: #FF6B6B;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.btn-logout:hover {
+    transform: scale(1.1);
+    background-color: #FF5252;
+}
+
+/* Ações do modal de logout */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-confirmar-logout, .btn-cancelar-logout {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-family: 'Inconsolata', monospace;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-confirmar-logout {
+    background: #FF6B6B;
+    color: white;
+}
+
+.btn-confirmar-logout:hover {
+    background: #FF5252;
+}
+
+.btn-cancelar-logout {
+    background: #FC913A;
+    color: white;
+}
+
+.btn-cancelar-logout:hover {
+    background: #FF8C42;
+}

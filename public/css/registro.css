@@ -1,0 +1,123 @@
+/* Reset e Fonte */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inconsolata', monospace;
+    background-color: #ffffff;
+    color: #333;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* --- CARD DE REGISTRO --- */
+.card-registro {
+    background-color: #F9D423;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 25px;
+    padding: 40px 35px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    animation: aparecer 0.3s ease;
+}
+
+@keyframes aparecer {
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* Título */
+.card-registro h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #000;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+/* Campos */
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.campo label {
+    font-size: 15px;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #000;
+}
+
+/* Input */
+.input-box {
+    background-color: #ffffff;
+    border-radius: 40px;
+    padding: 14px 22px;
+    font-size: 17px;
+    border: 2px solid transparent;
+    transition: 0.3s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.input-box:focus {
+    border-color: #FC913A;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    outline: none;
+}
+
+/* BOTÃO */
+.btn-registrar {
+    margin-top: 15px;
+    width: 100%;
+    background-color: #FC913A;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #000;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.btn-registrar:hover {
+    transform: scale(1.04);
+    background-color: #FF9F50;
+}
+
+/* Link */
+.link-login {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.link-login a {
+    color: #FC913A;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.link-login a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .card-registro {
+        padding: 30px 25px;
+    }
+
+    .card-registro h1 {
+        font-size: 28px;
+    }
+}
