@@ -6,9 +6,8 @@
 
   // Mostrar formulário de registro
   botaoRegistro.addEventListener('click', () => {
-    loginContainer.style.display = 'none';
-    registroContainer.style.display = 'flex';
-  });
+  window.location.href = '/registro';
+});
 
   // Voltar para login
   botaoVoltar.addEventListener('click', () => {
