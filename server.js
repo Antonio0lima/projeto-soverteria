@@ -1,10 +1,11 @@
-// server.js
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pool from './db.js';
 import dotenv from "dotenv";
 import session from "express-session";
+import multer from 'multer'; // [Novo] Import para upload
+import fs from 'fs';         // [Novo] Import para gerenciar pastas
 
 dotenv.config();
 
@@ -12,6 +13,26 @@ const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// --- CONFIGURAÇÃO DO MULTER (UPLOAD DE ARQUIVOS) ---
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Define a pasta onde os comprovantes serão salvos
+    const dir = './public/uploads/comprovantes/';
+    
+    // Cria a pasta se ela não existir
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    // Gera um nome único para não substituir arquivos iguais (Data + Nome Original)
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // --- CONFIGURAÇÃO DA SESSÃO ---
 app.use(
@@ -84,7 +105,6 @@ app.get('/perfil', async (req, res) => {
       return res.redirect('/');
     }
 
-    // Busca os dados completos do usuário logado
     const [usuarios] = await pool.query('SELECT * FROM clientes WHERE id = ?', [req.session.user.id]);
     
     if (usuarios.length === 0) {
@@ -92,11 +112,8 @@ app.get('/perfil', async (req, res) => {
     }
 
     const usuario = usuarios[0];
-
-    // Busca o total de pedidos do usuário
     const [pedidosCount] = await pool.query('SELECT COUNT(*) as total FROM pedidos WHERE id_cliente = ?', [req.session.user.id]);
     
-    // Formata os dados para a view
     const dadosUsuario = {
       id: usuario.id,
       nome: usuario.nome,
@@ -169,14 +186,10 @@ app.post('/atualizar-perfil', async (req, res) => {
     const { nome, data_nascimento, chave_pix } = req.body;
     const userId = req.session.user.id;
 
-    console.log("Dados recebidos para atualização:", { nome, data_nascimento, chave_pix });
-
-    // Validações básicas
     if (!nome || nome.trim() === '') {
       return res.status(400).json({ sucesso: false, erro: "Nome é obrigatório" });
     }
 
-    // Atualiza no banco de dados
     const query = `
       UPDATE clientes 
       SET nome = ?, data_nascimento = ?, chave_pix = ?
@@ -185,7 +198,6 @@ app.post('/atualizar-perfil', async (req, res) => {
     
     await pool.query(query, [nome.trim(), data_nascimento || null, chave_pix || null, userId]);
 
-    // Atualiza a sessão com o novo nome
     req.session.user.nome = nome.trim();
 
     res.json({ 
@@ -200,7 +212,7 @@ app.post('/atualizar-perfil', async (req, res) => {
   }
 });
 
-// Função auxiliar para formatar data para exibição
+// Funções auxiliares de data
 function formatarData(data) {
   if (!data) return '';
   const dataObj = new Date(data);
@@ -210,7 +222,6 @@ function formatarData(data) {
   return `${dia}/${mes}/${ano}`;
 }
 
-// Função auxiliar para formatar data para input type="date"
 function formatarDataParaInput(data) {
   if (!data) return '';
   const dataObj = new Date(data);
@@ -220,19 +231,13 @@ function formatarDataParaInput(data) {
   return `${ano}-${mes}-${dia}`;
 }
 
-
-// Rota da página de Finalização
 app.get('/finalizacao', (req, res) => {
-    // Se quiser obrigar login, descomente a linha abaixo:
-    // if (!req.session.user) { return res.redirect('/'); }
     res.render('finalizacao');
 });
 
-// === NOVA ROTA DE SUCESSO ===
 app.get('/pedido-concluido', (req, res) => {
     res.render('pedido-concluido');
 });
-// ============================
 
 // === ROTA PRINCIPAL DO CARDÁPIO ===
 app.get('/cardapio', async (req, res) => {
@@ -249,7 +254,6 @@ app.get('/cardapio', async (req, res) => {
       ORDER BY c.id, p.id;
     `);
 
-    // Busca Adicionais
     let rowsAdicionais = [];
     try {
         const [r] = await pool.query(`SELECT * FROM adicionais`);
@@ -283,66 +287,52 @@ app.get('/cardapio', async (req, res) => {
   }
 });
 
-// === ROTA DE FINALIZAR PEDIDO (SALVAR NO BANCO) ===
-app.post('/finalizar-pedido', async (req, res) => {
+// === ROTA DE FINALIZAR PEDIDO (ATUALIZADA COM UPLOAD) ===
+app.post('/finalizar-pedido', upload.single('comprovante'), async (req, res) => {
     try {
+        console.log("=== PROCESSANDO PEDIDO ===");
+        
+        // Dados de texto vêm em req.body
         let { id_cliente, produtos, valor } = req.body;
-
-        console.log("=== DADOS RECEBIDOS ===");
-        console.log("id_cliente:", id_cliente);
-        console.log("produtos (tipo):", typeof produtos);
-        console.log("produtos (valor):", produtos);
 
         if (!id_cliente) {
             return res.status(400).json({ sucesso: false, erro: "Usuário não logado" });
         }
 
+        // Parse dos produtos (pois FormData envia arrays como string)
         let produtosParaSalvar;
-
-        // CASO 1: Já é array (formato correto)
-        if (Array.isArray(produtos)) {
-            produtosParaSalvar = JSON.stringify(produtos);
-        }
-        // CASO 2: É string de texto (formato antigo)
-        else if (typeof produtos === 'string') {
-            // Aceita tanto string descritiva quanto JSON
-            try {
-                // Tenta parsear como JSON primeiro
-                const parsed = JSON.parse(produtos);
-                produtosParaSalvar = JSON.stringify(parsed);
-            } catch (e) {
-                // Se não for JSON, aceita como string descritiva
-                produtosParaSalvar = JSON.stringify([{ descricao: produtos }]);
-            }
-        }
-        // CASO 3: Outro formato
-        else {
+        try {
+            const parsed = JSON.parse(produtos);
+            produtosParaSalvar = JSON.stringify(parsed);
+        } catch (e) {
+            console.error("Erro ao parsear produtos:", e);
             produtosParaSalvar = JSON.stringify([]);
         }
 
-        console.log("Produtos para salvar:", produtosParaSalvar);
-
-        const query = `
+        // 1. Inserir Pedido
+        const queryPedido = `
             INSERT INTO pedidos (id_cliente, produtos, valor, status, data_pedido)
             VALUES (?, ?, ?, 'aguarda_confirmacao', NOW())
         `;
         
-        const [result] = await pool.query(query, [id_cliente, produtosParaSalvar, valor]);
-        const pedidoId = result.insertId;
+        const [result] = await pool.query(queryPedido, [id_cliente, produtosParaSalvar, valor]);
+        const idNovoPedido = result.insertId;
+        console.log("Pedido criado com ID:", idNovoPedido);
+
+        // 2. Se houver arquivo, salvar na tabela de comprovantes
+        if (req.file) {
+            // Caminho relativo para acessar via navegador
+            const caminhoRelativo = '/uploads/comprovantes/' + req.file.filename;
+            
+            const queryComprovante = `
+                INSERT INTO comprovantes_pix (id_pedido, nome_arquivo, caminho_arquivo)
+                VALUES (?, ?, ?)
+            `;
+            await pool.query(queryComprovante, [idNovoPedido, req.file.originalname, caminhoRelativo]);
+            console.log("Comprovante vinculado com sucesso.");
+        }
         
-        console.log("Pedido salvo com ID:", pedidoId);
-        
-        // CRIAR NOTIFICAÇÃO AUTOMÁTICA AO CRIAR PEDIDO
-        await criarNotificacao(
-            id_cliente,
-            pedidoId,
-            'Pedido Realizado com Sucesso! 🎉',
-            `Seu pedido #${pedidoId} foi recebido e está aguardando confirmação. Valor: R$ ${valor}`
-        );
-        
-        console.log(`Notificação de confirmação enviada para cliente ${id_cliente}`);
-        
-        res.json({ sucesso: true });
+        res.json({ sucesso: true, id_pedido: idNovoPedido });
 
     } catch (err) {
         console.error("Erro ao finalizar pedido:", err);
@@ -352,14 +342,12 @@ app.post('/finalizar-pedido', async (req, res) => {
 
 app.get("/historico", async (req, res) => {
   try {
-    // Verifica se o usuário está logado
     if (!req.session.user) {
       return res.redirect('/');
     }
 
     const userId = req.session.user.id;
 
-    // Busca apenas os pedidos do usuário logado
     const [rows] = await pool.query(`
       SELECT p.*, c.nome AS nome_cliente
       FROM pedidos p
@@ -367,8 +355,6 @@ app.get("/historico", async (req, res) => {
       WHERE p.id_cliente = ?
       ORDER BY p.data_pedido DESC
     `, [userId]);
-
-    console.log(`Encontrados ${rows.length} pedidos para o usuário ${userId}`);
 
     const pedidosFormatados = rows.map(p => {
       const data = new Date(p.data_pedido);
@@ -378,7 +364,6 @@ app.get("/historico", async (req, res) => {
       const hora = String(data.getHours()).padStart(2, '0');
       const min = String(data.getMinutes()).padStart(2, '0');
       
-      // Processa os produtos para exibição
       let produtosProcessados = [];
       if (p.produtos) {
         try {
@@ -389,7 +374,6 @@ app.get("/historico", async (req, res) => {
             produtosProcessados = Array.isArray(p.produtos) ? p.produtos : [p.produtos];
           }
         } catch (e) {
-          console.error(`Erro ao processar produtos do pedido ${p.id}:`, e);
           produtosProcessados = [{ descricao: p.produtos }];
         }
       }
@@ -602,14 +586,16 @@ app.post('/atualizar-status', async (req, res) => {
 
 app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
   try {
-    const [rows] = await pool.query(`
-      SELECT p.*, c.nome AS nome_cliente
+    // ATENÇÃO: Adicionado LEFT JOIN para pegar o comprovante se existir
+    const query = `
+      SELECT p.*, c.nome AS nome_cliente, cp.caminho_arquivo AS comprovante
       FROM pedidos p
       JOIN clientes c ON p.id_cliente = c.id
+      LEFT JOIN comprovantes_pix cp ON cp.id_pedido = p.id
       ORDER BY p.data_pedido DESC
-    `);
+    `;
 
-    console.log("Total de pedidos:", rows.length);
+    const [rows] = await pool.query(query);
 
     const pedidos = rows.map(p => {
       const data = new Date(p.data_pedido);
@@ -629,13 +615,10 @@ app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
             produtosParsed = p.produtos;
           }
         } catch (e) {
-          console.error(`Erro ao parsear pedido ${p.id}:`, e.message);
-          // Se não conseguir parsear, cria estrutura básica
           produtosParsed = [{ descricao: p.produtos }];
         }
       }
 
-      // Garante que é array
       if (!Array.isArray(produtosParsed)) {
         produtosParsed = [produtosParsed];
       }
@@ -643,7 +626,8 @@ app.get("/fila-pedidos", somenteAdmin, async (req, res) => {
       return {
         ...p,
         data_formatada: `${dia}/${mes}/${ano} ${hora}:${min}`,
-        produtos: produtosParsed
+        produtos: produtosParsed,
+        comprovante: p.comprovante // Passa o link do comprovante para a view
       };
     });
 
