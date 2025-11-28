@@ -6,11 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil</title>
 
-    <!-- Fonte e CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/perfil.css">
     <link rel="stylesheet" href="/css/navbar.css">
-    <!-- Ícones (FontAwesome) para o lápis -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -21,14 +19,14 @@
     <%- include("partials/navbar/navbar") %>
   <% } %>
 
-    <!-- Conteúdo Principal Centralizado -->
     <main class="container-principal">
 
+        <h1 class="titulo-pagina">
+            <i class="fa-solid fa-user" style="margin-right: 10px;"></i> Meu Perfil
+        </h1>
         <div class="card-perfil">
-            <!-- Grid de Campos -->
             <div class="campos-grid">
 
-                <!-- Linha 1: Nome Completo -->
                 <div class="campo full-width">
                     <label>nome do cliente</label>
                     <div class="input-box view-mode" id="nome-view">
@@ -38,7 +36,6 @@
                         value="<%= usuario.nome %>" style="display: none;">
                 </div>
 
-                <!-- Linha 2: Nascimento e Email -->
                 <div class="campo pequeno">
                     <label>data de nascimento</label>
                     <div class="input-box view-mode" id="nascimento-view">
@@ -57,7 +54,6 @@
                     </small>
                 </div>
 
-                <!-- Linha 3: Cadastro, Pedidos, Pix -->
                 <div class="campo pequeno">
                     <label>data de cadastro</label>
                     <div class="input-box">
@@ -82,7 +78,6 @@
 
             </div>
 
-            <!-- Botões de Ação -->
             <div class="botoes-acao">
                 <button class="btn-editar" id="btn-editar">
                     <i class="fa-solid fa-pencil"></i>
@@ -97,7 +92,6 @@
                     </button>
                 </div>
 
-                <!-- Botão de Logout -->
                 <button class="btn-logout" id="btn-logout" title="Sair da conta">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
@@ -107,7 +101,6 @@
 
     </main>
 
-    <!-- Modal de confirmação -->
     <div id="modal-sucesso" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -117,7 +110,6 @@
         </div>
     </div>
 
-    <!-- Modal de confirmação de logout -->
     <div id="modal-logout" class="modal" style="display: none;">
         <div class="modal-content">
             <h3>Sair da Conta</h3>
@@ -131,5 +123,4 @@
 
     <script src="/scripts/perfil.js"></script>
 </body>
-
 </html>
