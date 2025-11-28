@@ -11,10 +11,35 @@
 body {
     font-family: 'Inconsolata', monospace;
     background-color: var(--cor-fundo);
+    /* Adicionado ./ para forçar busca na mesma pasta */
+    background-image: url('./sorveteBackground2.jpeg'); 
+    background-repeat: repeat;
+    background-position: top center;
     margin: 0;
     padding: 0;
 }
+body{
+    background-image: url('/img/sorveteBackground2.jpeg');
+    background-size: cover;         /* Estica a imagem para cobrir toda a área */
+    background-repeat: no-repeat;   /* Evita repetição */
+    background-position: center;    /* Centraliza a imagem */
+    
 
+}
+body::before{
+    content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/img/sorveteBackground2.jpeg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: blur(8px);
+  
+  z-index: -1;
+}
 .pagina-container {
     max-width: 1000px;
     margin: 30px auto;
@@ -26,7 +51,7 @@ body {
     color: var(--cor-destaque);
     font-size: 2.5em;
     margin-bottom: 30px;
-    text-shadow: 2px 2px 0px #fff;
+    /* Sombra branca removida conforme solicitado anteriormente */
 }
 
 .carrinho-grid {
@@ -176,7 +201,6 @@ body {
 @media (max-width: 768px) {
     .carrinho-grid { grid-template-columns: 1fr; }
 }
-/* Adicione isso ao final do carrinho.css */
 
 .botao-finalizar:disabled {
     background-color: #cccccc; /* Cinza */
