@@ -1,17 +1,13 @@
-/* Importação da Fonte */
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
 
-/* Variáveis Padrão do Site */
 :root {
     --cor-fundo: #f0f0f0;
-    --cor-card: #EDE574;     /* Amarelo Padrão */
-    --cor-destaque: #ff914d; /* Laranja Padrão */
-    --cor-botao: #ff5e6a;    /* Vermelho/Rosa Padrão */
+    --cor-card: #EDE574;
+    --cor-destaque: #ff914d;
+    --cor-botao: #ff5e6a;
     --cor-texto: #333;
-    --cor-branco-transparente: rgba(255, 255, 255, 0.6);
 }
 
-/* Reset Básico */
 * {
     margin: 0;
     padding: 0;
@@ -24,8 +20,6 @@ body {
     color: var(--cor-texto);
     min-height: 100vh;
     padding: 20px;
-    
-    /* Background Fixo Padronizado */
     background-image: url('/img/sorveteBackground2.jpeg');
     background-size: cover;
     background-repeat: no-repeat;
@@ -46,11 +40,25 @@ body::before {
     z-index: -1;
 }
 
-/* --- CONTAINER PRINCIPAL (Cartão Amarelo) --- */
+/* --- TÍTULO PADRÃO (HEAD) --- */
+.titulo-pagina {
+    text-align: center;
+    color: var(--cor-destaque);
+    font-size: 2.5em;
+    margin: 20px 0 30px 0;
+    width: 100%;
+    text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+}
+
+.titulo-pagina i {
+    margin-right: 10px;
+}
+
+/* --- CONTAINER (Cartão Amarelo) --- */
 .notificacoes-container {
     max-width: 900px;
-    margin: 30px auto;
-    background-color: var(--cor-card); /* Amarelo Padrão */
+    margin: 0 auto 30px auto;
+    background-color: var(--cor-card);
     border-radius: 30px;
     box-shadow: 5px 8px 12px rgba(0,0,0,0.15);
     overflow: hidden;
@@ -58,40 +66,22 @@ body::before {
     flex-direction: column;
 }
 
-/* --- HEADER --- */
+/* --- HEADER COM BOTÕES --- */
 .notificacoes-header {
-    /* Removemos o gradiente vermelho antigo */
     background-color: transparent;
     padding: 30px 30px 10px 30px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* ISSO SEPARA OS BOTÕES */
     align-items: center;
     flex-wrap: wrap;
     gap: 15px;
 }
 
-.notificacoes-header h1 {
-    font-size: 2.2rem;
-    color: var(--cor-destaque); /* Título Laranja */
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.notificacoes-header h1 i {
-    font-size: 2rem;
-}
-
-/* --- BOTÕES DO HEADER --- */
-.header-actions {
-    display: flex;
-    gap: 15px;
-}
-
+/* Botões do Topo */
 .btn-marcar-todas, .btn-voltar {
     padding: 12px 25px;
     border: none;
-    border-radius: 50px; /* Botões arredondados padrão */
+    border-radius: 50px;
     cursor: pointer;
     font-family: 'Inconsolata', monospace;
     font-weight: 700;
@@ -99,28 +89,28 @@ body::before {
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: transform 0.2s, background-color 0.2s;
+    transition: transform 0.2s;
     font-size: 1rem;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 }
 
+/* Estilo Botão Esquerda (Marcar) */
 .btn-marcar-todas {
-    background-color: #fff;
+    background-color: white;
     color: var(--cor-destaque);
     border: 2px solid var(--cor-destaque);
 }
-
 .btn-marcar-todas:hover {
     background-color: var(--cor-destaque);
     color: white;
     transform: scale(1.05);
 }
 
+/* Estilo Botão Direita (Voltar) */
 .btn-voltar {
-    background-color: var(--cor-botao); /* Vermelho/Rosa */
+    background-color: var(--cor-botao);
     color: white;
 }
-
 .btn-voltar:hover {
     background-color: #ff404e;
     transform: scale(1.05);
@@ -131,12 +121,11 @@ body::before {
     display: flex;
     gap: 20px;
     padding: 20px 30px;
-    background: transparent; /* Remove fundo cinza */
-    border-bottom: 2px dashed rgba(0,0,0,0.05); /* Separador sutil */
+    border-bottom: 2px dashed rgba(0,0,0,0.05);
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.6); /* Branco translúcido */
+    background: rgba(255, 255, 255, 0.6);
     padding: 15px;
     border-radius: 20px;
     text-align: center;
@@ -162,26 +151,21 @@ body::before {
     font-weight: bold;
 }
 
-/* --- LISTA DE NOTIFICAÇÕES --- */
+/* --- LISTA --- */
 .notificacoes-list {
     padding: 30px;
     max-height: 600px;
     overflow-y: auto;
 }
 
-/* Scrollbar personalizada */
-.notificacoes-list::-webkit-scrollbar {
-    width: 8px;
-}
-.notificacoes-list::-webkit-scrollbar-track {
-    background: transparent;
-}
+.notificacoes-list::-webkit-scrollbar { width: 8px; }
+.notificacoes-list::-webkit-scrollbar-track { background: transparent; }
 .notificacoes-list::-webkit-scrollbar-thumb {
     background-color: var(--cor-destaque);
     border-radius: 10px;
 }
 
-/* Estado Vazio */
+/* Vazio */
 .notificacao-vazia {
     text-align: center;
     padding: 60px 20px;
@@ -189,20 +173,18 @@ body::before {
     background: rgba(255,255,255,0.4);
     border-radius: 20px;
 }
-
 .notificacao-vazia i {
     font-size: 4rem;
     color: rgba(0,0,0,0.1);
     margin-bottom: 20px;
 }
-
 .notificacao-vazia h3 {
     font-size: 1.5rem;
     margin-bottom: 10px;
     color: var(--cor-destaque);
 }
 
-/* --- ITEM DA NOTIFICAÇÃO --- */
+/* Item */
 .notificacao-item {
     display: flex;
     align-items: center;
@@ -211,35 +193,29 @@ body::before {
     border-radius: 20px;
     margin-bottom: 15px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    background: white; /* Card branco dentro do amarelo */
+    transition: all 0.2s;
+    background: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     border-left: 6px solid transparent;
 }
 
-/* Não lida */
 .notificacao-item.nao-lida {
-    background: white;
-    border-left-color: var(--cor-botao); /* Tarja vermelha na lateral */
+    border-left-color: var(--cor-botao);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* Lida */
 .notificacao-item.lida {
-    background: rgba(255,255,255,0.5); /* Um pouco mais transparente */
+    background: rgba(255,255,255,0.5);
     border-left-color: #aaa;
     opacity: 0.9;
 }
 
-.notificacao-item:hover {
-    transform: scale(1.02);
-}
+.notificacao-item:hover { transform: scale(1.02); }
 
-/* Ícone */
 .notificacao-icon {
     width: 50px;
     height: 50px;
-    background: var(--cor-destaque); /* Laranja padrão */
+    background: var(--cor-destaque);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -247,17 +223,11 @@ body::before {
     color: white;
     font-size: 1.2rem;
     flex-shrink: 0;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 }
 
-.notificacao-item.lida .notificacao-icon {
-    background: #ccc; /* Cinza se já leu */
-}
+.notificacao-item.lida .notificacao-icon { background: #ccc; }
 
-/* Conteúdo */
-.notificacao-content {
-    flex: 1;
-}
+.notificacao-content { flex: 1; }
 
 .notificacao-titulo {
     font-size: 1.2rem;
@@ -276,7 +246,6 @@ body::before {
     border-radius: 12px;
     font-size: 0.7rem;
     font-weight: bold;
-    letter-spacing: 1px;
 }
 
 .notificacao-mensagem {
@@ -303,13 +272,10 @@ body::before {
     font-size: 0.8rem;
 }
 
-/* Ações (Botão Check) */
-.notificacao-actions {
-    flex-shrink: 0;
-}
+.notificacao-actions { flex-shrink: 0; }
 
 .btn-marcar-lida {
-    background: #4CAF50; /* Verde sucesso */
+    background: #4CAF50;
     color: white;
     border: none;
     width: 40px;
@@ -319,51 +285,16 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
 }
 
-.btn-marcar-lida:hover {
-    background: #45a049;
-    transform: scale(1.1);
-}
+.btn-marcar-lida:hover { transform: scale(1.1); }
 
-/* Responsividade */
 @media (max-width: 768px) {
-    .notificacoes-container {
-        margin: 10px;
-        padding-bottom: 10px;
-    }
-
     .notificacoes-header {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
+        flex-direction: column-reverse; /* No celular, inverte para empilhar */
+        gap: 15px;
     }
-    
-    .header-actions {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .btn-marcar-todas, .btn-voltar {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .notificacao-item {
-        flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-    }
-    
-    .notificacao-icon {
-        margin-bottom: 10px;
-    }
-
-    .notificacao-actions {
-        align-self: flex-end;
-        margin-top: -40px; /* Joga o botão de check para cima no mobile */
-    }
+    .btn-marcar-todas, .btn-voltar { width: 100%; justify-content: center; }
 }

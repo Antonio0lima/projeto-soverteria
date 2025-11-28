@@ -4,28 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notificações</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/notificacoes.css">
+    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
- <% if (usuario && usuario.tipo==="admin" ) { %>
+    <% if (usuario && usuario.tipo==="admin" ) { %>
         <%- include("partials/navbar/navbar-adm") %>
-            <% } else { %>
-                <%- include("partials/navbar/navbar") %>
-                    <% } %>
+    <% } else { %>
+        <%- include("partials/navbar/navbar") %>
+    <% } %>
+
+    <h1 class="titulo-pagina">
+        <i class="fas fa-bell"></i> Notificações
+    </h1>
 
     <div class="notificacoes-container">
+        
         <div class="notificacoes-header">
-            <h1><i class="fas fa-bell"></i> Notificações</h1>
-            <div class="header-actions">
-                <button class="btn-marcar-todas" onclick="marcarTodasComoLidas()">
-                    <i class="fas fa-check-double"></i> Marcar todas como lidas
-                </button>
-                <a href="/inicial" class="btn-voltar">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-            </div>
+            <button class="btn-marcar-todas" onclick="marcarTodasComoLidas()">
+                <i class="fas fa-check-double"></i> Marcar todas como lidas
+            </button>
+            
+            <a href="/inicial" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
         </div>
 
         <div class="notificacoes-stats">
@@ -44,37 +50,40 @@
                 <div class="notificacao-vazia">
                     <i class="fas fa-bell-slash"></i>
                     <h3>Nenhuma notificação</h3>
-                    <p>Quando houver atualizações nos seus pedidos, elas aparecerão aqui.</p>
+                    <p>Quando houver atualizações, elas aparecerão aqui.</p>
                 </div>
             <% } else { %>
-                <% notificacoes.forEach(not => { %>
-                    <div class="notificacao-item <%= not.lida ? 'lida' : 'nao-lida' %>" 
-                         onclick="marcarComoLida(<%= not.id %>, this)">
+                <% notificacoes.forEach(n => { %>
+                    <div class="notificacao-item <%= n.lida ? 'lida' : 'nao-lida' %>" 
+                         onclick="marcarComoLida('<%= n.id %>', this)">
+                        
                         <div class="notificacao-icon">
-                            <% if (not.tipo === 'status_pedido') { %>
+                            <% if (n.tipo === 'status_pedido') { %>
                                 <i class="fas fa-shopping-bag"></i>
                             <% } else { %>
                                 <i class="fas fa-info-circle"></i>
                             <% } %>
                         </div>
+
                         <div class="notificacao-content">
                             <div class="notificacao-titulo">
-                                <%= not.titulo %>
-                                <% if (!not.lida) { %>
+                                <%= n.titulo %>
+                                <% if (!n.lida) { %>
                                     <span class="badge-nova">NOVA</span>
                                 <% } %>
                             </div>
-                            <div class="notificacao-mensagem"><%= not.mensagem %></div>
+                            <div class="notificacao-mensagem"><%= n.mensagem %></div>
                             <div class="notificacao-data">
-                                <i class="fas fa-clock"></i> <%= not.data_formatada %>
-                                <% if (not.pedido_id) { %>
-                                    <span class="pedido-id">Pedido #<%= not.pedido_id %></span>
+                                <i class="fas fa-clock"></i> <%= n.data_formatada %>
+                                <% if (n.pedido_id) { %>
+                                    <span class="pedido-id">Pedido #<%= n.pedido_id %></span>
                                 <% } %>
                             </div>
                         </div>
+
                         <div class="notificacao-actions">
-                            <% if (!not.lida) { %>
-                                <button class="btn-marcar-lida" onclick="event.stopPropagation(); marcarComoLida(<%= not.id %>, this.parentElement.parentElement)">
+                            <% if (!n.lida) { %>
+                                <button class="btn-marcar-lida" onclick="event.stopPropagation(); marcarComoLida('<%= n.id %>', this.parentElement.parentElement)">
                                     <i class="fas fa-check"></i>
                                 </button>
                             <% } %>
@@ -97,24 +106,19 @@
                 const data = await response.json();
                 
                 if (data.sucesso && elemento) {
-                    // Atualizar visualmente
                     elemento.classList.remove('nao-lida');
                     elemento.classList.add('lida');
                     
-                    // Remover badge "NOVA"
                     const badge = elemento.querySelector('.badge-nova');
                     if (badge) badge.remove();
-                    
-                    // Remover botão de marcar como lida
+
                     const btn = elemento.querySelector('.btn-marcar-lida');
                     if (btn) btn.remove();
                     
-                    // Atualizar contador
                     atualizarContadores();
                 }
             } catch (erro) {
-                console.error('Erro ao marcar notificação:', erro);
-                alert('Erro ao marcar notificação como lida');
+                console.error('Erro ao marcar:', erro);
             }
         }
 
@@ -124,48 +128,30 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-
                 const data = await response.json();
                 
                 if (data.sucesso) {
-                    // Atualizar todas visualmente
                     document.querySelectorAll('.notificacao-item').forEach(item => {
                         item.classList.remove('nao-lida');
                         item.classList.add('lida');
-                        
                         const badge = item.querySelector('.badge-nova');
                         if (badge) badge.remove();
-                        
                         const btn = item.querySelector('.btn-marcar-lida');
                         if (btn) btn.remove();
                     });
-                    
-                    // Atualizar contadores
                     atualizarContadores();
-                    
-                    alert('Todas as notificações foram marcadas como lidas!');
                 }
             } catch (erro) {
-                console.error('Erro ao marcar todas como lidas:', erro);
-                alert('Erro ao marcar notificações como lidas');
+                console.error('Erro ao marcar todas:', erro);
             }
         }
 
         function atualizarContadores() {
-            // Atualizar estatísticas
-            const naoLidas = document.querySelectorAll('.notificacao-item.nao-lida').length;
-            const total = document.querySelectorAll('.notificacao-item').length;
-            
-            // Aqui você pode atualizar os contadores na página se quiser
-            console.log(`Atualizado: ${naoLidas} não lidas, ${total} total`);
-            
-            // Recarregar a página após 1 segundo para atualizar os stats
             setTimeout(() => {
                 window.location.reload();
-            }, 1000);
+            }, 500);
         }
 
-        // Adicionar efeito de clique
         document.querySelectorAll('.notificacao-item').forEach(item => {
             item.addEventListener('click', function() {
                 this.style.transform = 'scale(0.98)';
