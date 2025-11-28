@@ -12,17 +12,20 @@ body {
     padding: 0 20px;
 }
 
-/* Header com os filtros laranjas */
+/* Header com os filtros */
 .header-historico {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .header-historico h1 {
     font-size: 2rem;
     color: #333;
+    margin: 0;
 }
 
 .filtros {
@@ -33,109 +36,195 @@ body {
 .filtro {
     width: 80px;
     height: 30px;
-    background-color: #FC913A; /* Laranja do seu tema */
+    background-color: #FC913A;
     border-radius: 20px;
     display: inline-block;
 }
 
-/* --- GRID LAYOUT MÁGICO --- */
+/* --- GRID LAYOUT CORRIGIDO --- */
 .grid-pedidos {
     display: grid;
-    /* Cria 3 colunas de tamanho igual */
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    /* Altura automática das linhas */
-    grid-auto-rows: minmax(180px, auto);
+    grid-auto-rows: minmax(200px, auto);
 }
 
 /* Estilo Base dos Cards */
 .card {
-    background-color: #EAF966; /* Amarelo/Verde claro da imagem */
+    background-color: #EAF966;
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     transition: transform 0.2s;
+    border: 2px solid transparent;
 }
 
 .card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
 /* --- QUADRADO A (Destaque) --- */
 .destaque {
-    /* Ocupa 2 colunas das 3 disponíveis */
-    grid-column: span 2; 
-    background-color: #E1F5C4; /* Um tom levemente diferente para destaque */
+    grid-column: span 2;
+    background-color: #E1F5C4;
     min-height: 250px;
-    border: 2px solid #fff;
+    border-color: #fff;
 }
 
-.destaque h2 {
-    font-size: 2rem;
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-body h2 {
+    font-size: 1.8rem;
     margin: 10px 0;
     color: #333;
 }
 
-.destaque .produtos {
-    font-size: 1.2rem;
+.card-body .produtos {
+    font-size: 1.1rem;
     color: #555;
+    line-height: 1.4;
+    margin: 10px 0;
+    max-height: 80px;
+    overflow: hidden;
+    display: -webkit-box;
+    
+    -webkit-box-orient: vertical;
 }
 
-.destaque .valor {
-    font-size: 1.5rem;
+.card-body .valor {
+    font-size: 1.8rem;
     font-weight: bold;
     color: #FF4E50;
-    margin-top: 10px;
+    margin-top: 15px;
+}
+
+.card-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-detalhes {
+    background: #FC913A;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-family: 'Inconsolata', monospace;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-detalhes:hover {
+    background: #e58232;
 }
 
 /* --- QUADRADO B (Vazio) --- */
 .vazio {
-    /* Ocupa 1 coluna */
     grid-column: span 1;
     background-color: #EAF966;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0.7;
-    border: 2px dashed #bbb; /* Borda tracejada para indicar vazio */
+    border: 2px dashed #bbb;
+    min-height: 200px;
 }
 
 .conteudo-vazio {
     text-align: center;
     color: #777;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+}
+
+.conteudo-vazio span {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
 }
 
 /* --- QUADRADOS C (Histórico) --- */
 .item-historico {
-    /* Ocupa 1 coluna naturalmente */
     grid-column: span 1;
-    background-color: #F9F967; /* Amarelo mais vivo */
-    font-size: 0.9rem;
+    background-color: #F9F967;
+    min-height: 180px;
+    justify-content: space-between;
 }
 
 .card-header-mini {
     display: flex;
     justify-content: space-between;
-    font-weight: bold;
-    color: #555;
+    align-items: center;
     margin-bottom: 10px;
+}
+
+.card-header-mini .id {
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.card-header-mini .data-mini {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.card-body-mini {
+    flex: 1;
+    margin: 10px 0;
 }
 
 .card-body-mini .resumo-prod {
     margin: 0;
-    white-space: nowrap;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    max-height: 40px;
     overflow: hidden;
-    text-overflow: ellipsis; /* Corta texto longo com ... */
+    display: -webkit-box;
+   
+    -webkit-box-orient: vertical;
 }
 
 .valor-mini {
     display: block;
-    margin-top: 5px;
-    font-size: 1.2rem;
+    margin-top: 8px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #FF4E50;
+}
+
+.card-status-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 10px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
 /* Tags de Status */
@@ -147,22 +236,133 @@ body {
     text-transform: uppercase;
 }
 
-.tag-status.confirmado { background-color: #4CAF50; color: white; }
-.tag-status.aguardando { background-color: #FFC107; color: black; }
-.tag-status.cancelado { background-color: #F44336; color: white; }
+.tag-status.confirmado, 
+.status-dot.confirmado { 
+    background-color: #4CAF50; 
+    color: white; 
+}
 
-/* Responsividade para Celular */
-@media (max-width: 768px) {
+.tag-status.aguardando,
+.status-dot.aguardando { 
+    background-color: #FFC107; 
+    color: black; 
+}
+
+.tag-status.cancelado,
+.status-dot.cancelado { 
+    background-color: #F44336; 
+    color: white; 
+}
+
+.tag-status.aguarda_confirmacao,
+.status-dot.aguarda_confirmacao { 
+    background-color: #FFC107; 
+    color: black; 
+}
+
+.tag-status.concluido,
+.status-dot.concluido { 
+    background-color: #4CAF50; 
+    color: white; 
+}
+
+.tag-status.aguarda_entrega,
+.status-dot.aguarda_entrega { 
+    background-color: #2196F3; 
+    color: white; 
+}
+
+/* Estados quando não há pedidos */
+.sem-pedidos {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #EAF966;
+    border-radius: 20px;
+}
+
+.sem-pedidos p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Responsividade para Tablet */
+@media (max-width: 1024px) {
     .grid-pedidos {
-        grid-template-columns: 1fr; /* 1 coluna só no celular */
+        grid-template-columns: repeat(2, 1fr);
     }
     
-    .destaque, .vazio, .item-historico {
-        grid-column: span 1; /* Todos ocupam a largura total */
+    .destaque {
+        grid-column: 1 / -1;
     }
     
     .vazio {
-        order: -1; /* Se quiser mudar a ordem no mobile */
-        display: none; /* Ou esconder o vazio no mobile */
+        grid-column: span 1;
     }
+}
+
+/* Responsividade para Celular */
+@media (max-width: 768px) {
+    .container-historico {
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+    
+    .header-historico {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filtros {
+        align-self: flex-end;
+    }
+    
+    .grid-pedidos {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .destaque, 
+    .vazio, 
+    .item-historico {
+        grid-column: 1;
+    }
+    
+    .vazio {
+        display: none; /* Esconde o quadrado vazio no mobile */
+    }
+    
+    .card {
+        padding: 15px;
+        min-height: 150px;
+    }
+    
+    .destaque {
+        min-height: 200px;
+    }
+    
+    .card-body h2 {
+        font-size: 1.5rem;
+    }
+    
+    .card-body .valor {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animações suaves */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out;
 }

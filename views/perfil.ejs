@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil</title>
-    
+
     <!-- Fonte e CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/perfil.css">
@@ -12,58 +13,106 @@
     <!-- Ícones (FontAwesome) para o lápis -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <% if (usuario && usuario.tipo==="admin" ) { %>
         <%- include("partials/navbar/navbar-adm") %>
             <% } else { %>
                 <%- include("partials/navbar/navbar") %>
                     <% } %>
-    <!-- Conteúdo Principal Centralizado -->
-    <main class="container-principal">
-        
-        <div class="card-perfil">
-            <!-- Grid de Campos -->
-            <div class="campos-grid">
-                
-                <!-- Linha 1: Nome Completo -->
-                <div class="campo full-width">
-                    <label>nome do cliente</label>
-                    <div class="input-box">Ana Souza da Silva</div>
-                </div>
 
-                <!-- Linha 2: Nascimento e Email -->
-                <div class="campo pequeno">
-                    <label>data de nascimento</label>
-                    <div class="input-box">12/03/1995</div>
-                </div>
-                <div class="campo medio">
-                    <label>e-mail cadastrado</label>
-                    <div class="input-box">ana.souza@example.com</div>
-                </div>
+                        <!-- Conteúdo Principal Centralizado -->
+                        <main class="container-principal">
 
-                <!-- Linha 3: Cadastro, Pedidos, Pix -->
-                <div class="campo pequeno">
-                    <label>data de cadastro</label>
-                    <div class="input-box">08/11/2025</div>
-                </div>
-                <div class="campo pequeno">
-                    <label>total de pedidos</label>
-                    <div class="input-box">15</div>
-                </div>
-                <div class="campo grande">
-                    <label>chave pix para reembolso</label>
-                    <div class="input-box">123.456.789-00</div>
-                </div>
+                            <div class="card-perfil">
+                                <!-- Grid de Campos -->
+                                <div class="campos-grid">
 
-            </div>
+                                    <!-- Linha 1: Nome Completo -->
+                                    <div class="campo full-width">
+                                        <label>nome do cliente</label>
+                                        <div class="input-box view-mode" id="nome-view">
+                                            <%= usuario.nome %>
+                                        </div>
+                                        <input type="text" class="input-edit edit-mode" id="nome-edit"
+                                            value="<%= usuario.nome %>" style="display: none;">
+                                    </div>
 
-            <!-- Botão de Editar Flutuante -->
-            <button class="btn-editar">
-                <i class="fa-solid fa-pencil"></i>
-            </button>
-        </div>
+                                    <!-- Linha 2: Nascimento e Email -->
+                                    <div class="campo pequeno">
+                                        <label>data de nascimento</label>
+                                        <div class="input-box view-mode" id="nascimento-view">
+                                            <%= usuario.data_nascimento_formatada %>
+                                        </div>
+                                        <input type="date" class="input-edit edit-mode" id="nascimento-edit"
+                                            value="<%= usuario.data_nascimento %>" style="display: none;">
+                                    </div>
+                                    <div class="campo medio">
+                                        <label>e-mail cadastrado</label>
+                                        <div class="input-box">
+                                            <%= usuario.email %>
+                                        </div>
+                                        <small style="color: #666; margin-top: 5px; display: block;">
+                                            Para alterar o e-mail, entre em contato com o suporte.
+                                        </small>
+                                    </div>
 
-    </main>
+                                    <!-- Linha 3: Cadastro, Pedidos, Pix -->
+                                    <div class="campo pequeno">
+                                        <label>data de cadastro</label>
+                                        <div class="input-box">
+                                            <%= usuario.data_cadastro %>
+                                        </div>
+                                    </div>
+                                    <div class="campo pequeno">
+                                        <label>total de pedidos</label>
+                                        <div class="input-box">
+                                            <%= usuario.total_pedidos %>
+                                        </div>
+                                    </div>
+                                    <div class="campo grande">
+                                        <label>chave pix para reembolso</label>
+                                        <div class="input-box view-mode" id="pix-view">
+                                            <%= usuario.chave_pix %>
+                                        </div>
+                                        <input type="text" class="input-edit edit-mode" id="pix-edit"
+                                            value="<%= usuario.chave_pix %>" placeholder="CPF, e-mail ou telefone"
+                                            style="display: none;">
+                                    </div>
 
+                                </div>
+
+                                <!-- Botões de Ação -->
+                                <div class="botoes-acao">
+                                    <button class="btn-editar" id="btn-editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </button>
+
+                                    <div class="botoes-edicao" id="botoes-edicao" style="display: none;">
+                                        <button class="btn-salvar" id="btn-salvar">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                        <button class="btn-cancelar" id="btn-cancelar">
+                                            <i class="fa-solid fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </main>
+
+                        <!-- Modal de confirmação -->
+                        <div id="modal-sucesso" class="modal" style="display: none;">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <h3>Sucesso!</h3>
+                                <p id="mensagem-sucesso"></p>
+                                <button id="btn-fechar-modal">Fechar</button>
+                            </div>
+                        </div>
+
+                        <script src="/scripts/perfil.js"></script>
 </body>
+
 </html>
