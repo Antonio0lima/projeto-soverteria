@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalEl = document.querySelector('.total-final span');
     const btnConcluir = document.querySelector('.btn-concluir');
     const idClienteInput = document.getElementById('id-cliente-final');
+    
+    // Elementos do Upload de Comprovante
+    const fileInput = document.getElementById('comprovante-upload');
+    const nomeArquivoDiv = document.querySelector('.nome-arquivo');
 
     // --- 2. CARREGAR CARRINHO ---
     let carrinho = JSON.parse(localStorage.getItem('carrinho_sorveteria') || '[]');
@@ -15,7 +19,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // --- 3. DESENHAR RESUMO ---
+    // --- 3. EVENTO DE ARQUIVO (Mostrar nome ao selecionar) ---
+    if(fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                nomeArquivoDiv.textContent = "Arquivo: " + this.files[0].name;
+                nomeArquivoDiv.style.color = "#333";
+                nomeArquivoDiv.style.fontWeight = "bold";
+            } else {
+                nomeArquivoDiv.textContent = "";
+            }
+        });
+    }
+
+    // --- 4. DESENHAR RESUMO ---
     listaResumo.innerHTML = "";
     let total = 0;
 
@@ -48,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     totalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
 
-    // --- 4. FINALIZAR PEDIDO ---
+    // --- 5. FINALIZAR PEDIDO (Com Upload) ---
     btnConcluir.addEventListener('click', async () => {
         const idCliente = idClienteInput.value;
         
@@ -58,48 +75,45 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        btnConcluir.innerText = "Processando...";
+        btnConcluir.innerText = "Enviando...";
         btnConcluir.disabled = true;
 
-        // ✅ PREPARA OS DADOS DE FORMA SEGURA
-        const dadosParaBanco = {
-            id_cliente: parseInt(idCliente), // Garante que é número
-            produtos: carrinho, // Array completo
-            valor: parseFloat(total.toFixed(2)) // Garante que é número
-        };
+        // ✅ USANDO FORMDATA PARA ENVIAR ARQUIVO + DADOS
+        const formData = new FormData();
+        
+        // Adiciona dados básicos
+        formData.append('id_cliente', idCliente);
+        formData.append('valor', total.toFixed(2));
+        
+        // O carrinho (array) precisa ser transformado em string para ir no FormData
+        formData.append('produtos', JSON.stringify(carrinho));
 
-        console.log("Enviando para servidor:", dadosParaBanco);
+        // Verifica se tem arquivo selecionado e adiciona
+        if (fileInput && fileInput.files.length > 0) {
+            formData.append('comprovante', fileInput.files[0]);
+        }
 
         try {
+            // Nota: Não defina 'Content-Type': 'application/json' aqui!
+            // O fetch detecta FormData e configura 'multipart/form-data' automaticamente.
             const resp = await fetch('/finalizar-pedido', {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(dadosParaBanco)
+                body: formData 
             });
-
-            // Verifica se a resposta é JSON
-            const contentType = resp.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Resposta do servidor não é JSON");
-            }
 
             const resultado = await resp.json();
 
             if (resultado.sucesso) {
-                alert("✅ Pedido realizado com sucesso!");
+                // Limpa o carrinho e redireciona
                 localStorage.removeItem('carrinho_sorveteria');
-                window.location.href = "/perfil";
+                window.location.href = "/pedido-concluido";
             } else {
-                alert("Erro: " + (resultado.erro || "Desconhecido"));
-                btnConcluir.innerText = "CONCLUIR PEDIDO";
-                btnConcluir.disabled = false;
+                throw new Error(resultado.erro || "Erro desconhecido no servidor");
             }
+
         } catch (err) {
             console.error("Erro detalhado:", err);
-            alert("Erro de conexão: " + err.message);
+            alert("Erro ao processar pedido: " + err.message);
             btnConcluir.innerText = "CONCLUIR PEDIDO";
             btnConcluir.disabled = false;
         }
