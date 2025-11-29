@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lista de Clientes</title>
+  
   <link rel="stylesheet" href="/css/lista-clientes.css">
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/navbar.css">
-  <script src="https://kit.fontawesome.com/a2e860a6f5.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body> 
@@ -18,12 +18,16 @@
     <%- include("partials/navbar/navbar") %>
   <% } %>
 
-  <div class="lista-clientes">
-    <h1 class="titulo-pagina">
-      <i class="fas fa-users"></i> Lista de Clientes
-    </h1>
+  <div id="dados-clientes-json" style="display: none;">
+    <%- JSON.stringify(typeof clientes !== 'undefined' ? clientes : []) %>
+  </div>
 
-    <% if (clientes.length === 0) { %>
+  <h1 class="titulo-pagina">
+    <i class="fas fa-users"></i> Lista de Clientes
+  </h1>
+
+  <div class="lista-clientes">
+    <% if (typeof clientes === 'undefined' || clientes.length === 0) { %>
       <div class="sem-clientes">
         <i class="fas fa-user-slash"></i>
         <h3>Nenhum cliente cadastrado</h3>
@@ -44,16 +48,14 @@
             <div class="email-cliente"><%= cliente.email %></div>
           </div>
 
-          <!-- ÍCONE DE OLHO -->
-          <div class="botao-ver" onclick='mostrarCliente(<%- JSON.stringify(cliente) %>)'>
-            <i class="fa-solid fa-eye"></i>
+          <div class="botao-ver" onclick="abrirModalCliente('<%= cliente.id %>')" title="Ver Detalhes">
+            <i class="fa-solid fa-info"></i>
           </div>
         </div>
       <% }) %>
     <% } %>
   </div>
 
-  <!-- POPUP -->
   <div id="popup-cliente" class="popup oculto">
     <div class="popup-conteudo">
       <div class="popup-header">
@@ -62,85 +64,77 @@
       </div>
 
       <div class="info-detalhada">
-        <div class="info-item">
-          <span class="info-label">Nome:</span>
-          <span class="info-value" id="c-nome"></span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Email:</span>
-          <span class="info-value" id="c-email"></span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Tipo de Usuário:</span>
-          <span class="info-value" id="c-tipo"></span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Data de Nascimento:</span>
-          <span class="info-value" id="c-nasc"></span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Data de Cadastro:</span>
-          <span class="info-value" id="c-cad"></span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Chave PIX:</span>
-          <span class="info-value" id="c-pix"></span>
-        </div>
-        
-        <div class="info-item">
-          <span class="info-label">Celular:</span>
-          <span class="info-value" id="c-celular"></span>
-        </div>
+        <div class="info-item"><span class="info-label">Nome:</span><span class="info-value" id="c-nome"></span></div>
+        <div class="info-item"><span class="info-label">Email:</span><span class="info-value" id="c-email"></span></div>
+        <div class="info-item"><span class="info-label">Tipo:</span><span class="info-value" id="c-tipo"></span></div>
+        <div class="info-item"><span class="info-label">Nascimento:</span><span class="info-value" id="c-nasc"></span></div>
+        <div class="info-item"><span class="info-label">Cadastro:</span><span class="info-value" id="c-cad"></span></div>
+        <div class="info-item"><span class="info-label">Pix:</span><span class="info-value" id="c-pix"></span></div>
+        <div class="info-item"><span class="info-label">Celular:</span><span class="info-value" id="c-celular"></span></div>
 
         <div class="estatisticas">
           <h3><i class="fas fa-chart-bar"></i> Estatísticas</h3>
-          <div class="info-item">
-            <span class="info-label">Total de Pedidos:</span>
-            <span class="info-value" id="c-total-pedidos">Carregando...</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Último Pedido:</span>
-            <span class="info-value" id="c-ultimo-pedido">Carregando...</span>
-          </div>
+          <div class="info-item"><span class="info-label">Total Pedidos:</span><span class="info-value" id="c-total-pedidos">...</span></div>
+          <div class="info-item"><span class="info-label">Último Pedido:</span><span class="info-value" id="c-ultimo-pedido">...</span></div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
+    // Recupera os dados da div oculta e converte para objeto JS
+    let todosClientes = [];
+    try {
+        const divConteudo = document.getElementById('dados-clientes-json').textContent;
+        todosClientes = JSON.parse(divConteudo || '[]');
+    } catch (e) {
+        console.error("Erro ao ler dados:", e);
+    }
+
     function formatarData(data) {
       if (!data) return "Não informado";
-      const dataObj = new Date(data);
-      return dataObj.toLocaleDateString('pt-BR');
+      try {
+        const dataObj = new Date(data);
+        if (isNaN(dataObj)) return data; 
+        return dataObj.toLocaleDateString('pt-BR');
+      } catch (e) { return data; }
+    }
+
+    function abrirModalCliente(id) {
+      const idStr = String(id);
+      const cliente = todosClientes.find(c => String(c.id) === idStr);
+      
+      if (cliente) {
+          mostrarCliente(cliente);
+      } else {
+          console.error("Cliente não encontrado. ID:", id);
+      }
     }
 
     function mostrarCliente(cliente) {
-      // Preencher informações básicas
       document.getElementById("c-nome").textContent = cliente.nome || "Não informado";
       document.getElementById("c-email").textContent = cliente.email || "Não informado";
+      
       document.getElementById("c-tipo").innerHTML = cliente.tipo_usuario === 'admin' 
         ? '<span class="badge-tipo badge-admin">ADMINISTRADOR</span>' 
         : '<span class="badge-tipo badge-cliente">CLIENTE</span>';
+        
       document.getElementById("c-nasc").textContent = formatarData(cliente.data_nascimento);
       document.getElementById("c-cad").textContent = formatarData(cliente.data_cadastro);
       document.getElementById("c-pix").textContent = cliente.chave_pix || "Não cadastrada";
       document.getElementById("c-celular").textContent = cliente.numero_celular || "Não informado";
-
-      // Buscar estatísticas do cliente
-      buscarEstatisticasCliente(cliente.id);
-
-      // Mostrar popup
+      
+      if(cliente.id) {
+        buscarEstatisticasCliente(cliente.id);
+      }
+      
       document.getElementById("popup-cliente").classList.remove("oculto");
     }
 
     async function buscarEstatisticasCliente(clienteId) {
       try {
         const response = await fetch(`/api/cliente/${clienteId}/estatisticas`);
+        if (!response.ok) throw new Error('Falha API');
         const data = await response.json();
         
         if (data.sucesso) {
@@ -149,13 +143,13 @@
             ? formatarData(data.ultimoPedido) 
             : "Nenhum pedido";
         } else {
-          document.getElementById("c-total-pedidos").textContent = "Erro ao carregar";
-          document.getElementById("c-ultimo-pedido").textContent = "Erro ao carregar";
+          document.getElementById("c-total-pedidos").textContent = "-";
+          document.getElementById("c-ultimo-pedido").textContent = "-";
         }
       } catch (erro) {
-        console.error('Erro ao buscar estatísticas:', erro);
-        document.getElementById("c-total-pedidos").textContent = "Erro";
-        document.getElementById("c-ultimo-pedido").textContent = "Erro";
+        console.error(erro);
+        document.getElementById("c-total-pedidos").textContent = "-";
+        document.getElementById("c-ultimo-pedido").textContent = "-";
       }
     }
 
@@ -163,18 +157,12 @@
       document.getElementById("popup-cliente").classList.add("oculto");
     }
 
-    // Fechar popup clicando fora
     document.getElementById('popup-cliente').addEventListener('click', function(e) {
-      if (e.target === this) {
-        fecharPopup();
-      }
+      if (e.target === this) fecharPopup();
     });
 
-    // Fechar popup com ESC
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        fecharPopup();
-      }
+      if (e.key === 'Escape') fecharPopup();
     });
   </script>
 </body>

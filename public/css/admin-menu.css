@@ -1,3 +1,15 @@
+/* Importação da Fonte */
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap');
+
+/* Variáveis Padrão do Site */
+:root {
+    --cor-fundo: #f0f0f0;
+    --cor-card: #EDE574;     /* Amarelo Padrão */
+    --cor-destaque: #ff914d; /* Laranja Padrão */
+    --cor-botao: #ff5e6a;    /* Vermelho/Rosa Padrão */
+    --cor-texto: #333;
+}
+
 /* ===== RESET ===== */
 * {
     margin: 0;
@@ -6,32 +18,30 @@
 }
 
 body {
-    background-image: url('/img/sorveteBackground2.jpeg');
     font-family: 'Inconsolata', monospace;
-    background: #f5f5f5;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
     min-height: 100vh;
-}
-body{
-    background-image: url('/img/sorveteBackground2.jpeg');
-    background-size: cover;         /* Estica a imagem para cobrir toda a área */
-    background-repeat: no-repeat;   /* Evita repetição */
-    background-position: center;    /* Centraliza a imagem */
     
-
+    /* Background Fixo Padronizado */
+    background-image: url('/img/sorveteBackground2.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-body::before{
+
+body::before {
     content: "";
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/img/sorveteBackground2.jpeg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: blur(8px);
-  
-  z-index: -1;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/img/sorveteBackground2.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(8px);
+    z-index: -1;
 }
 
 /* ===== CONTAINER ===== */
@@ -42,65 +52,74 @@ body::before{
     text-align: center;
 }
 
-/* ===== TÍTULO ===== */
+/* ===== TÍTULO PADRÃO (Sem caixa, texto laranja) ===== */
 .titulo {
-    font-size: 2.2em;
+    font-size: 2.5em;
     font-weight: 700;
-    color: #000;
-    background: #F9D423;
-    display: inline-block;
-    padding: 12px 25px;
-    border-radius: 12px;
+    color: var(--cor-destaque); /* Laranja */
+    display: block;
     margin-bottom: 40px;
-    box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+    background: none; /* Remove fundo antigo */
+    box-shadow: none; /* Remove sombra antiga */
+    text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
 }
 
 /* ===== GRID DE CARDS ===== */
 .cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
+    gap: 30px;
 }
 
-/* ===== CARD ===== */
+/* ===== CARD (Agora Amarelo) ===== */
 .card {
-    background: #E1F5C4;
-    border-radius: 12px;
-    padding: 35px 20px;
+    background-color: var(--cor-card); /* Amarelo Padrão */
+    border-radius: 30px; /* Arredondamento padrão */
+    padding: 40px 20px;
     text-decoration: none;
-    color: black;
-    transition: 0.25s;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    color: var(--cor-texto);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 5px 8px 12px rgba(0,0,0,0.15); /* Sombra padrão */
 
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
+    border: 2px solid transparent;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+    box-shadow: 5px 12px 20px rgba(0,0,0,0.2);
+    /* Opcional: Borda laranja ao passar o mouse */
+    border-color: rgba(255, 145, 77, 0.3); 
 }
 
 /* Ícone grande */
 .card i {
-    font-size: 3rem;
-    color: #FC913A;
+    font-size: 3.5rem;
+    color: var(--cor-botao); /* Usa o vermelho/rosa para destaque no amarelo */
+    margin-bottom: 10px;
+    transition: transform 0.2s;
+}
+
+.card:hover i {
+    transform: scale(1.1);
 }
 
 /* Título do card */
 .card h2 {
-    font-size: 1.4em;
+    font-size: 1.5em;
     font-weight: 700;
-    color: #000;
+    color: #333;
 }
 
 /* Descrição */
 .card p {
-    font-size: 0.95em;
+    font-size: 1em;
     color: #555;
-    max-width: 230px;
+    max-width: 250px;
+    line-height: 1.4;
 }
 
 /* ===== RESPONSIVIDADE ===== */
@@ -117,6 +136,10 @@ body::before{
     }
 
     .titulo {
-        font-size: 1.8em;
+        font-size: 2em;
+    }
+    
+    .card {
+        padding: 30px 20px;
     }
 }

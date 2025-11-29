@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lista de Produtos</title>
-  <link rel="stylesheet" href="/css/fila-pedidos-lista-clientes.css">
+  
+  <link rel="stylesheet" href="/css/lista-produtos.css">
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/navbar.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,39 +18,81 @@
     <%- include("partials/navbar/navbar") %>
   <% } %>
 
-  <div class="menu">
-  <button class="botao_add_grande" onclick="abrirPopupNovoProduto()">
-    <i class="fa-solid fa-plus"></i>
-  </button>
-</div>
+  <h1 class="titulo-pagina">
+    <i class="fa-solid fa-ice-cream"></i> Gerenciar Cardápio
+  </h1>
 
-  <!-- Lista de Categorias e Produtos -->
-  <div class="lista-produtos">
-    <% categorias.forEach(categoria => { %>
-      <% if (categoria.produtos.length > 0) { %>
-        <div class="categoria-section">
-          <h2 class="titulo-categoria"><%= categoria.nome %></h2>
-          
-          <% categoria.produtos.forEach(produto => { %>
-            <div class="linha-produto">
-              <div class="info-produto">
-                <strong><%= produto.nome %></strong>
-                <% if (produto.descricao) { %>
-                  <span class="descricao-produto"> - <%= produto.descricao %></span>
-                <% } %>
-                <div class="tamanhos-produto">
-                  <% produto.tamanhos.forEach(tamanho => { %>
-                    <span class="tag-tamanho">
-                      <%= tamanho.nome %>: R$ <%= parseFloat(tamanho.preco).toFixed(2) %>
-                    </span>
-                  <% }) %>
+  <div class="lista-produtos-container">
+    
+    <div class="area-novo-produto">
+      <button class="btn-novo-produto" onclick="abrirPopupNovoProduto()">
+        <i class="fa-solid fa-plus-circle"></i> Novo Produto
+      </button>
+    </div>
+
+    <div class="conteudo-lista">
+      <% categorias.forEach(categoria => { %>
+        <% if (categoria.produtos.length > 0) { %>
+          <div class="categoria-section">
+            <h2 class="titulo-categoria"><%= categoria.nome %></h2>
+            
+            <% categoria.produtos.forEach(produto => { %>
+              <div class="linha-produto">
+                <div class="info-produto">
+                  <span class="nome-produto"><%= produto.nome %></span>
+                  
+                  <% if (produto.descricao) { %>
+                    <span class="descricao-produto"><%= produto.descricao %></span>
+                  <% } %>
+                  
+                  <div class="tamanhos-wrapper">
+                    <% produto.tamanhos.forEach(tamanho => { %>
+                      <span class="tag-tamanho">
+                        <%= tamanho.nome %>: R$ <%= parseFloat(tamanho.preco).toFixed(2) %>
+                      </span>
+                    <% }) %>
+                  </div>
+                </div>
+
+                <div class="botoes-acao">
+                  <div class="botao-editar" onclick="editarProduto('<%= produto.id %>')" title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </div>
+                  <div class="botao-excluir" onclick="excluirProduto('<%= produto.id %>')" title="Excluir">
+                    <i class="fa-solid fa-trash"></i>
+                  </div>
                 </div>
               </div>
+            <% }) %>
+          </div>
+        <% } %>
+      <% }) %>
+
+      <% if (adicionais.length > 0) { %>
+        <div class="categoria-section">
+          <h2 class="titulo-categoria">Adicionais</h2>
+          
+          <% adicionais.forEach(adicional => { %>
+            <div class="linha-produto">
+              <div class="info-produto">
+                <span class="nome-produto"><%= adicional.nome %></span>
+                <span class="descricao-produto"><%= adicional.descricao || 'Adicional' %></span>
+                
+                <div class="tamanhos-wrapper">
+                  <span class="tag-tamanho">
+                    R$ <%= parseFloat(adicional.preco).toFixed(2) %>
+                  </span>
+                  <% if (adicional.categoria_nome) { %>
+                    <span class="tag-categoria"><%= adicional.categoria_nome %></span>
+                  <% } %>
+                </div>
+              </div>
+
               <div class="botoes-acao">
-                <div class="botao-editar" onclick="editarProduto(<%= produto.id %>)">
+                <div class="botao-editar" onclick="editarAdicional('<%= adicional.id %>')">
                   <i class="fa-solid fa-pencil"></i>
                 </div>
-                <div class="botao-excluir" onclick="excluirProduto(<%= produto.id %>)">
+                <div class="botao-excluir" onclick="excluirAdicional('<%= adicional.id %>')">
                   <i class="fa-solid fa-trash"></i>
                 </div>
               </div>
@@ -57,49 +100,17 @@
           <% }) %>
         </div>
       <% } %>
-    <% }) %>
-
-    <!-- Seção de Adicionais -->
-    <% if (adicionais.length > 0) { %>
-      <div class="categoria-section">
-        <h2 class="titulo-categoria">Adicionais</h2>
-        
-        <% adicionais.forEach(adicional => { %>
-          <div class="linha-produto">
-            <div class="info-produto">
-              <strong><%= adicional.nome %></strong>
-              <span class="descricao-produto"> - <%= adicional.descricao || 'Adicional' %></span>
-              <div class="tamanhos-produto">
-                <span class="tag-tamanho">
-                  Preço: R$ <%= parseFloat(adicional.preco).toFixed(2) %>
-                </span>
-                <% if (adicional.categoria_nome) { %>
-                  <span class="tag-categoria">Categoria: <%= adicional.categoria_nome %></span>
-                <% } %>
-              </div>
-            </div>
-            <div class="botoes-acao">
-              <div class="botao-editar" onclick="editarAdicional(<%= adicional.id %>)">
-                <i class="fa-solid fa-pencil"></i>
-              </div>
-              <div class="botao-excluir" onclick="excluirAdicional(<%= adicional.id %>)">
-                <i class="fa-solid fa-trash"></i>
-              </div>
-            </div>
-          </div>
-        <% }) %>
-      </div>
-    <% } %>
+    </div>
   </div>
 
-  <!-- Popup para Novo Produto/Edição -->
-  <div id="popupProduto" class="popup-overlay" style="display: none;">
+  <div id="popupProduto" class="popup-overlay">
     <div class="popup-content">
       <div class="popup-header">
         <h2 id="popupTitulo">Novo Produto</h2>
         <span class="close-popup" onclick="fecharPopup()">&times;</span>
       </div>
-      <form id="formProduto" class="popup-form">
+      
+      <form id="formProduto">
         <input type="hidden" id="produtoId">
         
         <div class="form-group">
@@ -124,9 +135,7 @@
         
         <div class="form-group">
           <label>Tamanhos e Preços:</label>
-          <div id="tamanhosContainer">
-            <!-- Tamanhos serão adicionados dinamicamente -->
-          </div>
+          <div id="tamanhosContainer"></div>
           <button type="button" class="btn-adicionar" onclick="adicionarTamanho()">
             <i class="fa-solid fa-plus"></i> Adicionar Tamanho
           </button>
@@ -140,267 +149,6 @@
     </div>
   </div>
 
-  <style>
-    .lista-produtos {
-      width: 2000px;
-      max-width: 95vw;
-      min-height: 700px;
-      background-color: #E1F5C4;
-      margin: 40px auto;
-      border-radius: 40px;
-      padding: 40px 20px;
-      box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.3);
-    }
-
-    .categoria-section {
-      margin-bottom: 30px;
-    }
-
-    .titulo-categoria {
-      font-size: 28px;
-      color: #333;
-      margin-bottom: 20px;
-      padding-left: 20px;
-      border-left: 5px solid #FC913A;
-    }
-
-    .linha-produto {
-      background-color: #EAF966;
-      width: 95%;
-      height: auto;
-      min-height: 80px;
-      margin: 0 auto 15px;
-      display: flex;
-      align-items: center;
-      padding: 15px 30px;
-      border-radius: 25px;
-      box-sizing: border-box;
-      font-size: 18px;
-      box-shadow: 3px 3px 8px 0px rgba(0, 0, 0, 0.2);
-      justify-content: space-between;
-    }
-
-    .info-produto {
-      flex: 1;
-    }
-
-    .info-produto strong {
-      font-size: 20px;
-      color: #333;
-    }
-
-    .descricao-produto {
-      color: #666;
-      font-size: 16px;
-    }
-
-    .tamanhos-produto {
-      margin-top: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .tag-tamanho, .tag-categoria {
-      background: #FC913A;
-      color: white;
-      padding: 4px 12px;
-      border-radius: 15px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .tag-categoria {
-      background: #667eea;
-    }
-
-    .botoes-acao {
-      display: flex;
-      gap: 10px;
-    }
-
-    .botao-editar, .botao-excluir {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .botao-editar {
-      background-color: #ff9634ff;
-    }
-
-    .botao-excluir {
-      background-color: #e74c3c;
-    }
-
-    .botao-editar:hover, .botao-excluir:hover {
-      transform: scale(1.1);
-    }
-
-    /* Popup Styles */
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .popup-content {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .popup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .close-popup {
-      font-size: 30px;
-      cursor: pointer;
-      color: #666;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      font-family: 'Inconsolata', monospace;
-      font-size: 16px;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #FC913A;
-    }
-
-    .tamanho-item {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
-    }
-
-    .tamanho-item input {
-      flex: 1;
-    }
-
-    .btn-remover-tamanho {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-
-    .btn-adicionar {
-      background: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-family: 'Inconsolata', monospace;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 15px;
-      justify-content: flex-end;
-      margin-top: 20px;
-    }
-
-    .btn-salvar {
-      background: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 25px;
-      cursor: pointer;
-      font-family: 'Inconsolata', monospace;
-      font-weight: 600;
-    }
-
-    .btn-cancelar {
-      background: #95a5a6;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 25px;
-      cursor: pointer;
-      font-family: 'Inconsolata', monospace;
-      font-weight: 600;
-    }
-
-    /* Remove estilos antigos do menu */
-.menu {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
-  margin-bottom: 40px;
-}
-
-/* Novo botão grande */
-.botao_add_grande {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background-color: #FC913A;
-  color: white;
-  border: none;
-  font-size: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  transition: transform 0.2s, background-color 0.2s;
-}
-
-.botao_add_grande:hover {
-  transform: scale(1.1);
-  background-color: #ffae61;
-}
-
-  </style>
-
   <script>
     function abrirPopupNovoProduto() {
       document.getElementById('popupTitulo').textContent = 'Novo Produto';
@@ -411,30 +159,21 @@
     }
 
     function editarProduto(id) {
-      // Aqui você implementaria a busca dos dados do produto
       document.getElementById('popupTitulo').textContent = 'Editar Produto';
       document.getElementById('produtoId').value = id;
-      // Preencher os campos com os dados do produto
       document.getElementById('popupProduto').style.display = 'flex';
+      // Lógica de fetch dos dados viria aqui
     }
 
     function excluirProduto(id) {
-      if (confirm('Tem certeza que deseja excluir este produto?')) {
-        // Implementar exclusão
-        console.log('Excluir produto:', id);
+      if (confirm('Deseja excluir este produto?')) {
+        console.log('Excluir:', id);
       }
     }
 
-    function editarAdicional(id) {
-      // Implementar edição de adicional
-      console.log('Editar adicional:', id);
-    }
-
-    function excluirAdicional(id) {
-      if (confirm('Tem certeza que deseja excluir este adicional?')) {
-        // Implementar exclusão
-        console.log('Excluir adicional:', id);
-      }
+    function editarAdicional(id) { console.log('Edit Add:', id); }
+    function excluirAdicional(id) { 
+      if(confirm('Excluir adicional?')) console.log('Del Add:', id); 
     }
 
     function fecharPopup() {
@@ -446,7 +185,7 @@
       const div = document.createElement('div');
       div.className = 'tamanho-item';
       div.innerHTML = `
-        <input type="text" placeholder="Nome do tamanho" required>
+        <input type="text" placeholder="Tamanho (ex: 300ml)" required>
         <input type="number" placeholder="Preço" step="0.01" min="0" required>
         <button type="button" class="btn-remover-tamanho" onclick="this.parentElement.remove()">
           <i class="fa-solid fa-times"></i>
@@ -455,26 +194,15 @@
       container.appendChild(div);
     }
 
-    // Fechar popup clicando fora
     document.getElementById('popupProduto').addEventListener('click', function(e) {
-      if (e.target === this) {
-        fecharPopup();
-      }
+      if (e.target === this) fecharPopup();
     });
 
-    // Submit do formulário
     document.getElementById('formProduto').addEventListener('submit', function(e) {
       e.preventDefault();
-      // Implementar salvamento
-      console.log('Salvar produto:', {
-        id: document.getElementById('produtoId').value,
-        nome: document.getElementById('produtoNome').value,
-        descricao: document.getElementById('produtoDescricao').value,
-        categoria: document.getElementById('produtoCategoria').value
-      });
+      // Lógica de salvar
       fecharPopup();
     });
   </script>
-
 </body>
 </html>
